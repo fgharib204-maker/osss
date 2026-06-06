@@ -1,0 +1,2720 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ملخص أنظمة التشغيل - CS-DS203</title>
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700;900&family=Fira+Code:wght@400;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0a0e1a;
+    --surface: #111827;
+    --surface2: #1a2235;
+    --border: #1e3a5f;
+    --accent: #00d4ff;
+    --accent2: #7c3aed;
+    --accent3: #10b981;
+    --accent4: #f59e0b;
+    --accent5: #ef4444;
+    --text: #e2e8f0;
+    --text-dim: #94a3b8;
+    --glow: 0 0 20px rgba(0,212,255,0.3);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Cairo', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* Animated background grid */
+  body::before {
+    content: '';
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background-image:
+      linear-gradient(rgba(0,212,255,0.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(0,212,255,0.03) 1px, transparent 1px);
+    background-size: 50px 50px;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  /* ===== SIDEBAR NAV ===== */
+  .sidebar {
+    position: fixed;
+    right: 0; top: 0; bottom: 0;
+    width: 280px;
+    background: var(--surface);
+    border-left: 1px solid var(--border);
+    overflow-y: auto;
+    z-index: 100;
+    padding: 20px 0;
+    transition: transform 0.3s ease;
+  }
+
+  .sidebar-logo {
+    padding: 0 20px 20px;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 15px;
+  }
+
+  .sidebar-logo h2 {
+    font-size: 1rem;
+    color: var(--accent);
+    font-weight: 700;
+    line-height: 1.4;
+  }
+
+  .sidebar-logo p {
+    font-size: 0.75rem;
+    color: var(--text-dim);
+    margin-top: 4px;
+  }
+
+  .nav-section {
+    padding: 8px 20px;
+    font-size: 0.65rem;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    color: var(--accent);
+    font-weight: 700;
+    margin-top: 10px;
+  }
+
+  .nav-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 20px;
+    cursor: pointer;
+    transition: all 0.2s;
+    font-size: 0.85rem;
+    color: var(--text-dim);
+    border-right: 3px solid transparent;
+    text-align: right;
+  }
+
+  .nav-item:hover, .nav-item.active {
+    background: rgba(0,212,255,0.08);
+    color: var(--accent);
+    border-right-color: var(--accent);
+  }
+
+  .nav-item .icon {
+    font-size: 1.1rem;
+    min-width: 20px;
+    text-align: center;
+  }
+
+  /* ===== MAIN CONTENT ===== */
+  .main {
+    margin-right: 280px;
+    min-height: 100vh;
+    position: relative;
+    z-index: 1;
+  }
+
+  /* ===== HERO ===== */
+  .hero {
+    background: linear-gradient(135deg, #0a0e1a 0%, #0d1b3e 50%, #0a0e1a 100%);
+    padding: 80px 60px;
+    position: relative;
+    overflow: hidden;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .hero::after {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -20%;
+    width: 600px;
+    height: 600px;
+    background: radial-gradient(circle, rgba(0,212,255,0.08) 0%, transparent 70%);
+    pointer-events: none;
+  }
+
+  .hero-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(0,212,255,0.1);
+    border: 1px solid rgba(0,212,255,0.3);
+    padding: 6px 16px;
+    border-radius: 50px;
+    font-size: 0.75rem;
+    color: var(--accent);
+    margin-bottom: 20px;
+    letter-spacing: 1px;
+  }
+
+  .hero h1 {
+    font-size: 3rem;
+    font-weight: 900;
+    line-height: 1.1;
+    margin-bottom: 16px;
+    background: linear-gradient(135deg, #fff 0%, var(--accent) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
+  .hero p {
+    font-size: 1.1rem;
+    color: var(--text-dim);
+    max-width: 600px;
+    line-height: 1.7;
+  }
+
+  .hero-stats {
+    display: flex;
+    gap: 40px;
+    margin-top: 40px;
+    flex-wrap: wrap;
+  }
+
+  .stat {
+    text-align: center;
+  }
+
+  .stat-num {
+    font-size: 2rem;
+    font-weight: 900;
+    color: var(--accent);
+    display: block;
+  }
+
+  .stat-label {
+    font-size: 0.75rem;
+    color: var(--text-dim);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+
+  /* ===== SECTIONS ===== */
+  .content {
+    padding: 40px 60px;
+  }
+
+  .section {
+    display: none;
+    animation: fadeIn 0.4s ease;
+  }
+
+  .section.active {
+    display: block;
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .section-title {
+    font-size: 1.8rem;
+    font-weight: 900;
+    margin-bottom: 8px;
+    color: var(--text);
+  }
+
+  .section-subtitle {
+    color: var(--text-dim);
+    font-size: 0.95rem;
+    margin-bottom: 32px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  /* ===== CARDS ===== */
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 24px;
+    margin-bottom: 20px;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .card::before {
+    content: '';
+    position: absolute;
+    top: 0; right: 0;
+    width: 4px;
+    height: 100%;
+    background: var(--accent);
+    border-radius: 0 12px 12px 0;
+  }
+
+  .card:hover {
+    border-color: rgba(0,212,255,0.4);
+    box-shadow: var(--glow);
+    transform: translateX(-4px);
+  }
+
+  .card.purple::before { background: var(--accent2); }
+  .card.green::before { background: var(--accent3); }
+  .card.amber::before { background: var(--accent4); }
+  .card.red::before { background: var(--accent5); }
+
+  .card-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 16px;
+  }
+
+  .card-icon {
+    width: 42px;
+    height: 42px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.3rem;
+    background: rgba(0,212,255,0.1);
+    border: 1px solid rgba(0,212,255,0.2);
+    flex-shrink: 0;
+  }
+
+  .card.purple .card-icon { background: rgba(124,58,237,0.1); border-color: rgba(124,58,237,0.2); }
+  .card.green .card-icon { background: rgba(16,185,129,0.1); border-color: rgba(16,185,129,0.2); }
+  .card.amber .card-icon { background: rgba(245,158,11,0.1); border-color: rgba(245,158,11,0.2); }
+  .card.red .card-icon { background: rgba(239,68,68,0.1); border-color: rgba(239,68,68,0.2); }
+
+  .card h3 {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--text);
+  }
+
+  .card p, .card li {
+    color: var(--text-dim);
+    line-height: 1.8;
+    font-size: 0.9rem;
+  }
+
+  .card ul, .card ol {
+    padding-right: 20px;
+    margin-top: 10px;
+  }
+
+  .card li {
+    margin-bottom: 6px;
+  }
+
+  /* ===== GRID LAYOUTS ===== */
+  .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+  .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+
+  /* ===== TAGS ===== */
+  .tags { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
+  .tag {
+    padding: 4px 12px;
+    border-radius: 50px;
+    font-size: 0.75rem;
+    font-weight: 600;
+  }
+  .tag-blue { background: rgba(0,212,255,0.12); color: var(--accent); border: 1px solid rgba(0,212,255,0.2); }
+  .tag-purple { background: rgba(124,58,237,0.12); color: #a78bfa; border: 1px solid rgba(124,58,237,0.2); }
+  .tag-green { background: rgba(16,185,129,0.12); color: #34d399; border: 1px solid rgba(16,185,129,0.2); }
+  .tag-amber { background: rgba(245,158,11,0.12); color: #fbbf24; border: 1px solid rgba(245,158,11,0.2); }
+  .tag-red { background: rgba(239,68,68,0.12); color: #f87171; border: 1px solid rgba(239,68,68,0.2); }
+
+  /* ===== TIMELINE ===== */
+  .timeline {
+    position: relative;
+    padding-right: 30px;
+  }
+
+  .timeline::before {
+    content: '';
+    position: absolute;
+    right: 6px;
+    top: 0; bottom: 0;
+    width: 2px;
+    background: linear-gradient(to bottom, var(--accent), var(--accent2));
+  }
+
+  .timeline-item {
+    position: relative;
+    margin-bottom: 24px;
+    padding: 16px 20px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    transition: all 0.3s;
+  }
+
+  .timeline-item::before {
+    content: '';
+    position: absolute;
+    right: -37px;
+    top: 20px;
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    background: var(--accent);
+    border: 3px solid var(--bg);
+    box-shadow: 0 0 10px var(--accent);
+  }
+
+  .timeline-item:hover {
+    border-color: rgba(0,212,255,0.4);
+    box-shadow: var(--glow);
+  }
+
+  .timeline-era {
+    font-size: 0.72rem;
+    color: var(--accent);
+    font-weight: 700;
+    letter-spacing: 1px;
+    margin-bottom: 6px;
+    text-transform: uppercase;
+  }
+
+  .timeline-item h4 {
+    font-size: 1rem;
+    font-weight: 700;
+    margin-bottom: 8px;
+    color: var(--text);
+  }
+
+  .timeline-item p {
+    font-size: 0.85rem;
+    color: var(--text-dim);
+    line-height: 1.7;
+  }
+
+  /* ===== ALGORITHM CARDS ===== */
+  .algo-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    overflow: hidden;
+    margin-bottom: 20px;
+  }
+
+  .algo-header {
+    padding: 16px 20px;
+    background: var(--surface2);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .algo-header h3 {
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--text);
+  }
+
+  .algo-body { padding: 20px; }
+
+  .process-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 16px 0;
+    font-size: 0.85rem;
+    font-family: 'Fira Code', monospace;
+  }
+
+  .process-table th {
+    background: var(--surface2);
+    padding: 8px 12px;
+    text-align: center;
+    color: var(--accent);
+    font-weight: 600;
+    border: 1px solid var(--border);
+    font-size: 0.8rem;
+  }
+
+  .process-table td {
+    padding: 8px 12px;
+    text-align: center;
+    border: 1px solid var(--border);
+    color: var(--text-dim);
+  }
+
+  .process-table tr:hover td { background: rgba(0,212,255,0.05); color: var(--text); }
+
+  /* Gantt Chart */
+  .gantt {
+    display: flex;
+    align-items: center;
+    gap: 0;
+    margin: 16px 0;
+    overflow-x: auto;
+    padding-bottom: 30px;
+    position: relative;
+  }
+
+  .gantt-block {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    position: relative;
+  }
+
+  .gantt-bar {
+    height: 40px;
+    min-width: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 0.85rem;
+    font-family: 'Fira Code', monospace;
+    border: 1px solid rgba(255,255,255,0.1);
+  }
+
+  .gantt-time {
+    position: absolute;
+    bottom: -22px;
+    font-size: 0.7rem;
+    color: var(--text-dim);
+    white-space: nowrap;
+  }
+
+  .g-p1 { background: rgba(0,212,255,0.25); color: #00d4ff; }
+  .g-p2 { background: rgba(124,58,237,0.25); color: #a78bfa; }
+  .g-p3 { background: rgba(16,185,129,0.25); color: #34d399; }
+  .g-p4 { background: rgba(245,158,11,0.25); color: #fbbf24; }
+  .g-idle { background: rgba(255,255,255,0.05); color: var(--text-dim); }
+
+  /* Steps */
+  .steps {
+    counter-reset: step;
+    list-style: none;
+    padding: 0;
+    margin: 12px 0;
+  }
+
+  .steps li {
+    counter-increment: step;
+    display: flex;
+    gap: 14px;
+    align-items: flex-start;
+    margin-bottom: 14px;
+    color: var(--text-dim);
+    font-size: 0.88rem;
+    line-height: 1.7;
+  }
+
+  .steps li::before {
+    content: counter(step);
+    min-width: 26px;
+    height: 26px;
+    background: rgba(0,212,255,0.15);
+    border: 1px solid rgba(0,212,255,0.3);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: var(--accent);
+    flex-shrink: 0;
+    margin-top: 1px;
+  }
+
+  /* Formula */
+  .formula {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 12px 16px;
+    margin: 12px 0;
+    font-family: 'Fira Code', monospace;
+    font-size: 0.88rem;
+    color: var(--accent3);
+  }
+
+  /* Highlight box */
+  .highlight {
+    background: rgba(0,212,255,0.06);
+    border: 1px solid rgba(0,212,255,0.2);
+    border-radius: 8px;
+    padding: 14px 18px;
+    margin: 12px 0;
+    font-size: 0.88rem;
+    color: var(--text-dim);
+    line-height: 1.7;
+  }
+
+  .highlight.warning {
+    background: rgba(245,158,11,0.06);
+    border-color: rgba(245,158,11,0.2);
+  }
+
+  .highlight.danger {
+    background: rgba(239,68,68,0.06);
+    border-color: rgba(239,68,68,0.2);
+  }
+
+  .highlight.success {
+    background: rgba(16,185,129,0.06);
+    border-color: rgba(16,185,129,0.2);
+  }
+
+  /* ===== FIGURE DIAGRAMS ===== */
+  .diagram {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 20px;
+    margin: 16px 0;
+    text-align: center;
+  }
+
+  .diagram-title {
+    font-size: 0.75rem;
+    color: var(--accent);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 16px;
+    font-weight: 700;
+  }
+
+  .process-states {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 0;
+    position: relative;
+  }
+
+  .state-box {
+    background: var(--surface);
+    border: 2px solid var(--border);
+    border-radius: 50px;
+    padding: 8px 20px;
+    font-size: 0.85rem;
+    font-weight: 700;
+    position: relative;
+    transition: all 0.3s;
+    cursor: default;
+  }
+
+  .state-box:hover {
+    border-color: var(--accent);
+    box-shadow: 0 0 15px rgba(0,212,255,0.2);
+    color: var(--accent);
+  }
+
+  .state-new { border-color: #10b981; color: #34d399; }
+  .state-ready { border-color: #00d4ff; color: #00d4ff; }
+  .state-running { border-color: #7c3aed; color: #a78bfa; }
+  .state-waiting { border-color: #f59e0b; color: #fbbf24; }
+  .state-terminated { border-color: #ef4444; color: #f87171; }
+
+  .arrow {
+    color: var(--text-dim);
+    font-size: 1.2rem;
+    padding: 0 6px;
+    display: flex;
+    align-items: center;
+  }
+
+  /* ===== COMPARISON TABLE ===== */
+  .comp-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 16px 0;
+    font-size: 0.85rem;
+  }
+
+  .comp-table th {
+    background: rgba(0,212,255,0.1);
+    padding: 10px 14px;
+    text-align: center;
+    color: var(--accent);
+    font-weight: 700;
+    border: 1px solid var(--border);
+  }
+
+  .comp-table td {
+    padding: 10px 14px;
+    border: 1px solid var(--border);
+    color: var(--text-dim);
+    text-align: center;
+    vertical-align: top;
+    line-height: 1.6;
+  }
+
+  .comp-table tr:nth-child(even) td { background: rgba(255,255,255,0.02); }
+
+  .check { color: #34d399; }
+  .cross { color: #f87171; }
+
+  /* ===== MOBILE TOGGLE ===== */
+  .menu-toggle {
+    display: none;
+    position: fixed;
+    top: 15px;
+    right: 15px;
+    z-index: 200;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 10px;
+    cursor: pointer;
+    color: var(--accent);
+    font-size: 1.2rem;
+  }
+
+  /* ===== SEARCH ===== */
+  .search-bar {
+    width: 100%;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 12px 16px;
+    color: var(--text);
+    font-family: 'Cairo', sans-serif;
+    font-size: 0.9rem;
+    outline: none;
+    margin-bottom: 20px;
+    transition: border-color 0.2s;
+  }
+
+  .search-bar:focus {
+    border-color: var(--accent);
+    box-shadow: 0 0 10px rgba(0,212,255,0.15);
+  }
+
+  .search-bar::placeholder { color: var(--text-dim); }
+
+  /* Progress indicator */
+  .progress-bar {
+    position: fixed;
+    top: 0; left: 0;
+    height: 3px;
+    background: linear-gradient(90deg, var(--accent), var(--accent2));
+    z-index: 999;
+    transition: width 0.3s;
+    width: 0%;
+  }
+
+  /* ===== RESPONSIVE ===== */
+  @media (max-width: 900px) {
+    .sidebar { transform: translateX(100%); }
+    .sidebar.open { transform: translateX(0); }
+    .main { margin-right: 0; }
+    .menu-toggle { display: flex; align-items: center; justify-content: center; }
+    .content { padding: 20px; }
+    .hero { padding: 50px 20px; }
+    .hero h1 { font-size: 2rem; }
+    .grid-2, .grid-3 { grid-template-columns: 1fr; }
+  }
+
+  .adv-dis {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin-top: 12px;
+  }
+
+  .adv-box, .dis-box {
+    padding: 14px;
+    border-radius: 8px;
+    font-size: 0.83rem;
+    line-height: 1.7;
+  }
+
+  .adv-box {
+    background: rgba(16,185,129,0.07);
+    border: 1px solid rgba(16,185,129,0.2);
+  }
+
+  .dis-box {
+    background: rgba(239,68,68,0.07);
+    border: 1px solid rgba(239,68,68,0.2);
+  }
+
+  .adv-box h5 { color: #34d399; margin-bottom: 8px; font-size: 0.82rem; }
+  .dis-box h5 { color: #f87171; margin-bottom: 8px; font-size: 0.82rem; }
+  .adv-box li, .dis-box li { color: var(--text-dim); margin-bottom: 4px; }
+  .adv-box ul, .dis-box ul { padding-right: 16px; }
+
+  /* ===== SECTION SUMMARY BOX ===== */
+  .section-summary {
+    background: linear-gradient(135deg, rgba(0,212,255,0.06) 0%, rgba(124,58,237,0.06) 100%);
+    border: 1px solid rgba(0,212,255,0.25);
+    border-right: 4px solid var(--accent);
+    border-radius: 12px;
+    padding: 22px 24px;
+    margin-top: 28px;
+    position: relative;
+    overflow: hidden;
+  }
+  .section-summary::before {
+    content: '📌';
+    position: absolute;
+    top: 16px;
+    left: 20px;
+    font-size: 1.3rem;
+    opacity: 0.6;
+  }
+  .section-summary-title {
+    font-size: 1rem;
+    font-weight: 900;
+    color: var(--accent);
+    margin-bottom: 14px;
+    letter-spacing: 0.5px;
+  }
+  .section-summary .sum-row {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .sum-item {
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+    font-size: 0.86rem;
+    color: var(--text-dim);
+    line-height: 1.6;
+  }
+  .sum-label {
+    min-width: 130px;
+    font-weight: 700;
+    color: var(--text);
+    flex-shrink: 0;
+    font-size: 0.82rem;
+    padding: 2px 8px;
+    border-radius: 4px;
+    background: rgba(0,212,255,0.08);
+    border: 1px solid rgba(0,212,255,0.15);
+    text-align: center;
+  }
+
+  /* ===== THREAD DIAGRAM ===== */
+  .thread-diagram {
+    display: flex;
+    gap: 24px;
+    margin-top: 16px;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+  .thread-box {
+    flex: 1;
+    min-width: 220px;
+    background: var(--surface2);
+    border-radius: 12px;
+    border: 1px solid var(--border);
+    overflow: hidden;
+  }
+  .thread-box-title {
+    padding: 10px 16px;
+    font-weight: 700;
+    font-size: 0.88rem;
+    text-align: center;
+    letter-spacing: 0.5px;
+  }
+  .thread-box-title.ut { background: rgba(0,212,255,0.12); color: var(--accent); }
+  .thread-box-title.kt { background: rgba(124,58,237,0.12); color: #a78bfa; }
+  .thread-layers {
+    padding: 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+  .t-layer {
+    border-radius: 6px;
+    padding: 7px 12px;
+    font-size: 0.78rem;
+    font-weight: 600;
+    text-align: center;
+    font-family: 'Fira Code', monospace;
+  }
+  .t-user  { background: rgba(0,212,255,0.15); color: #00d4ff; border: 1px solid rgba(0,212,255,0.25); }
+  .t-lib   { background: rgba(16,185,129,0.12); color: #34d399; border: 1px solid rgba(16,185,129,0.2); }
+  .t-kernel{ background: rgba(124,58,237,0.15); color: #a78bfa; border: 1px solid rgba(124,58,237,0.25); }
+  .t-sep   { border-top: 2px dashed rgba(255,255,255,0.1); margin: 4px 0; font-size: 0.7rem; color: var(--text-dim); text-align: center; padding-top: 4px; }
+  .t-arrow { text-align: center; font-size: 1.1rem; color: var(--text-dim); }
+
+  /* ===== FINAL COMPARISON TABLE ===== */
+  .mega-comp th { background: rgba(0,212,255,0.12); font-size: 0.82rem; padding: 10px 10px; }
+  .mega-comp td { font-size: 0.82rem; padding: 10px 10px; }
+  .mega-comp .yes { color: #34d399; font-weight: 700; }
+  .mega-comp .no  { color: #f87171; font-weight: 700; }
+  .mega-comp .partial { color: #fbbf24; font-weight: 700; }
+
+  /* ===== LANG TOGGLE BUTTON ===== */
+  .lang-toggle {
+    position: fixed;
+    bottom: 24px;
+    left: 24px;
+    z-index: 300;
+    background: var(--surface);
+    border: 1.5px solid var(--accent);
+    border-radius: 50px;
+    padding: 11px 22px;
+    cursor: pointer;
+    color: var(--accent);
+    font-family: 'Cairo', sans-serif;
+    font-size: 0.9rem;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    box-shadow: 0 0 18px rgba(0,212,255,0.22);
+    transition: all 0.25s ease;
+    letter-spacing: 0.4px;
+    user-select: none;
+  }
+  .lang-toggle:hover {
+    background: rgba(0,212,255,0.11);
+    box-shadow: 0 0 28px rgba(0,212,255,0.42);
+    transform: translateY(-2px);
+  }
+  .lang-toggle .lang-flag { font-size: 1.15rem; }
+  .lang-toggle .lang-label { line-height: 1; }
+
+</style>
+</head>
+<body>
+
+<div class="progress-bar" id="progressBar"></div>
+<button class="menu-toggle" onclick="toggleSidebar()">☰</button>
+<button class="lang-toggle" id="langToggleBtn" onclick="toggleLang()">
+  <span class="lang-flag">🌐</span>
+  <span class="lang-label" id="langLabel">English</span>
+</button>
+
+<!-- SIDEBAR -->
+<nav class="sidebar" id="sidebar">
+  <div class="sidebar-logo">
+    <h2>🖥️ أنظمة التشغيل</h2>
+    <p>CS-DS203 · د. عبير حسن</p>
+  </div>
+
+  <div class="nav-section">المقدمة</div>
+  <div class="nav-item active" onclick="showSection('intro')">
+    <span class="icon">🏠</span> نظرة عامة على المادة
+  </div>
+
+  <div class="nav-section">أنواع أنظمة التشغيل</div>
+  <div class="nav-item" onclick="showSection('os-types')">
+    <span class="icon">📊</span> التطور والأنواع
+  </div>
+  <div class="nav-item" onclick="showSection('os-frontend')">
+    <span class="icon">🖥️</span> واجهات نظام التشغيل
+  </div>
+
+  <div class="nav-section">وظائف نظام التشغيل</div>
+  <div class="nav-item" onclick="showSection('process-mgmt')">
+    <span class="icon">⚙️</span> إدارة العمليات
+  </div>
+  <div class="nav-item" onclick="showSection('scheduling')">
+    <span class="icon">📅</span> خوارزميات الجدولة
+  </div>
+  <div class="nav-item" onclick="showSection('threads')">
+    <span class="icon">🧵</span> الخيوط (Threads)
+  </div>
+  <div class="nav-item" onclick="showSection('deadlock')">
+    <span class="icon">🔒</span> الـ Deadlock
+  </div>
+  <div class="nav-item" onclick="showSection('memory')">
+    <span class="icon">💾</span> إدارة الذاكرة
+  </div>
+  <div class="nav-item" onclick="showSection('paging')">
+    <span class="icon">📄</span> Paging & Segmentation
+  </div>
+
+  <div class="nav-section">أمثلة محلولة</div>
+  <div class="nav-item" onclick="showSection('examples')">
+    <span class="icon">📝</span> أمثلة وحلول
+  </div>
+</nav>
+
+<!-- MAIN CONTENT -->
+<main class="main">
+
+  <!-- HERO -->
+  <div class="hero">
+    <div class="hero-badge">🎓 Helwan International Technological University</div>
+    <h1>ملخص أنظمة التشغيل</h1>
+    <p>ملخص شامل ومنظّم لمادة CS-DS203 — يغطي كل المحاضرات بشرح مبسّط، أنواع وفيجرز، خطوات الحل، وأمثلة محلولة بالتفصيل.</p>
+    <div class="hero-stats">
+      <div class="stat"><span class="stat-num">229</span><span class="stat-label">سلايد</span></div>
+      <div class="stat"><span class="stat-num">8</span><span class="stat-label">وظيفة رئيسية</span></div>
+      <div class="stat"><span class="stat-num">7+</span><span class="stat-label">نوع نظام تشغيل</span></div>
+      <div class="stat"><span class="stat-num">6+</span><span class="stat-label">خوارزميات جدولة</span></div>
+      <div class="stat"><span class="stat-num">NEW</span><span class="stat-label">Banker's + Page Replacement</span></div>
+    </div>
+  </div>
+
+  <div class="content">
+
+    <!-- ===== SECTION: INTRO ===== -->
+    <div class="section active" id="intro">
+      <div class="section-title">نظرة عامة على المادة</div>
+      <div class="section-subtitle">ما هو نظام التشغيل؟ مكوناته ووظائفه الأساسية</div>
+
+      <div class="card">
+        <div class="card-header">
+          <div class="card-icon">🖥️</div>
+          <h3>ما هو نظام التشغيل؟</h3>
+        </div>
+        <p>نظام التشغيل هو <strong style="color:var(--accent)">برنامج يعمل كوسيط</strong> بين المستخدم والأجهزة (Hardware)، يتحكم في تشغيل البرامج وإدارة الموارد.</p>
+        <div class="highlight success">
+          <strong>التعريف الرسمي:</strong> مجموعة من برامج النظام التي تتحكم في عمليات الحاسوب معاً.
+        </div>
+        <p style="margin-top:12px;"><strong>أمثلة:</strong></p>
+        <div class="tags">
+          <span class="tag tag-blue">UNIX</span>
+          <span class="tag tag-blue">MS-Windows</span>
+          <span class="tag tag-purple">Linux</span>
+          <span class="tag tag-purple">MacOS</span>
+          <span class="tag tag-green">MS-DOS</span>
+          <span class="tag tag-amber">Android</span>
+          <span class="tag tag-red">iOS</span>
+        </div>
+      </div>
+
+      <div class="grid-2">
+        <div class="card purple">
+          <div class="card-header">
+            <div class="card-icon">🎯</div>
+            <h3>أهداف نظام التشغيل</h3>
+          </div>
+          <ul>
+            <li>تنفيذ برامج المستخدم وتسهيل حل مشاكله</li>
+            <li>جعل استخدام الحاسوب مريحاً وسهلاً</li>
+            <li>استخدام موارد الجهاز بكفاءة عالية</li>
+          </ul>
+        </div>
+
+        <div class="card green">
+          <div class="card-header">
+            <div class="card-icon">🏗️</div>
+            <h3>مكونات نظام الحاسوب</h3>
+          </div>
+          <ol>
+            <li><strong>Hardware:</strong> الموارد الأساسية (CPU, RAM, I/O)</li>
+            <li><strong>OS:</strong> يتحكم ويُنسّق استخدام الـ Hardware</li>
+            <li><strong>التطبيقات:</strong> تحدد طريقة استخدام الموارد</li>
+            <li><strong>المستخدمون:</strong> أشخاص أو آلات أو حواسيب أخرى</li>
+          </ol>
+        </div>
+      </div>
+
+      <div class="grid-2">
+        <div class="card amber">
+          <div class="card-header">
+            <div class="card-icon">🔧</div>
+            <h3>Kernel (النواة)</h3>
+          </div>
+          <p>الجزء النشط من نظام التشغيل الذي يعمل طوال الوقت ويتفاعل مباشرة مع الـ Hardware.</p>
+          <ul style="margin-top:10px;">
+            <li>إدارة العمليات (Process Management)</li>
+            <li>إدارة الذاكرة (Memory Management)</li>
+            <li>نظام الملفات (File System)</li>
+            <li>برامج التشغيل (Device Drivers)</li>
+            <li>إدارة I/O</li>
+          </ul>
+        </div>
+
+        <div class="card red">
+          <div class="card-header">
+            <div class="card-icon">💬</div>
+            <h3>Shell (مُفسّر الأوامر)</h3>
+          </div>
+          <p>يُسمى command interpreter. مجموعة برامج للتفاعل مع التطبيقات.</p>
+          <ol style="margin-top:10px;">
+            <li>المستخدم يكتب الأوامر</li>
+            <li>Shell يُفسّر الأوامر</li>
+            <li>يُرسل تعليمات لنظام التشغيل</li>
+            <li>النظام يُنفّذ عبر التطبيقات</li>
+            <li>النتيجة تُعاد للمستخدم</li>
+          </ol>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <div class="card-icon">📋</div>
+          <h3>وظائف نظام التشغيل الثماني</h3>
+        </div>
+        <div class="grid-2">
+          <ul>
+            <li>⚙️ <strong>Process Management</strong> — إدارة العمليات</li>
+            <li>💾 <strong>Memory Management</strong> — إدارة الذاكرة</li>
+            <li>📁 <strong>File Management</strong> — إدارة الملفات</li>
+            <li>🔌 <strong>I/O System Management</strong> — إدارة الإدخال/الإخراج</li>
+          </ul>
+          <ul>
+            <li>💿 <strong>Secondary Storage Management</strong> — التخزين الثانوي</li>
+            <li>🌐 <strong>Networking</strong> — الشبكات</li>
+            <li>🛡️ <strong>Protection System</strong> — نظام الحماية</li>
+            <li>💻 <strong>Command Interpreter</strong> — مُفسّر الأوامر</li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- SUMMARY: INTRO -->
+      <div class="section-summary">
+        <div class="section-summary-title">⚡ ملخص سريع — نظرة عامة</div>
+        <div class="sum-row">
+          <div class="sum-item"><span class="sum-label">🌟 أهم نقطة</span> نظام التشغيل وسيط بين المستخدم والـ Hardware — بدونه لا يعمل أي برنامج.</div>
+          <div class="sum-item"><span class="sum-label">❓ أشهر سؤال</span> ما الفرق بين Kernel وShell؟ — الـ Kernel جوهر النظام يتحكم في الـ Hardware مباشرة، والـ Shell واجهة تُفسّر أوامر المستخدم وتُمررها للنظام.</div>
+          <div class="sum-item"><span class="sum-label">📋 الوظائف الـ 8</span> Process + Memory + File + I/O + Secondary Storage + Networking + Protection + Command Interpreter.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== SECTION: OS TYPES ===== -->
+    <div class="section" id="os-types">
+      <div class="section-title">📊 تطور وأنواع أنظمة التشغيل</div>
+      <div class="section-subtitle">Backend view — التطور التاريخي من الأربعينات حتى الآن</div>
+
+      <div class="timeline">
+
+        <div class="timeline-item">
+          <div class="timeline-era">1940s–1950s</div>
+          <h4>1. لا يوجد نظام تشغيل</h4>
+          <p>البرامج تُنفَّذ يدوياً بـ punch cards. برنامج واحد في وقت واحد. المشغّل الإنسان هو نظام التشغيل!</p>
+          <div class="tags"><span class="tag tag-red">يدوي بالكامل</span><span class="tag tag-red">برنامج واحد فقط</span></div>
+        </div>
+
+        <div class="timeline-item">
+          <div class="timeline-era">1950s–1960s</div>
+          <h4>2. Mainframe Systems</h4>
+          <p>أول نظام تشغيل حقيقي (Resident Monitor). يقلّل وقت الإعداد بتجميع المهام المتشابهة. ينقل التحكم تلقائياً من مهمة لأخرى.</p>
+          <div class="adv-dis">
+            <div class="adv-box"><h5>✅ مميزات</h5><ul><li>قدرة معالجة ضخمة</li><li>قابل للتوسع</li><li>موثوقية عالية</li><li>أمان قوي</li></ul></div>
+            <div class="dis-box"><h5>❌ عيوب</h5><ul><li>تكلفة عالية جداً</li><li>معقد التشغيل</li><li>غير مرن</li></ul></div>
+          </div>
+        </div>
+
+        <div class="timeline-item">
+          <div class="timeline-era">1960s–1970s</div>
+          <h4>3. Batch Processing OS</h4>
+          <p>يقبل أكثر من مهمة ويجمّعها حسب المتطلبات المتشابهة. برنامج واحد في وقت واحد. جدولة المهام حسب الأولوية والموارد.</p>
+          <div class="adv-dis">
+            <div class="adv-box"><h5>✅ مميزات</h5><ul><li>كفاءة موارد عالية</li><li>إنتاجية مرتفعة</li><li>تقليل الأخطاء البشرية</li><li>فعّال من حيث التكلفة</li></ul></div>
+            <div class="dis-box"><h5>❌ عيوب</h5><ul><li>لا يحل مشاكل معقدة</li><li>مشاكل أمنية</li><li>يمكن مقاطعته</li><li>بطيء وغير فعال</li></ul></div>
+          </div>
+        </div>
+
+        <div class="timeline-item">
+          <div class="timeline-era">1960s–1970s</div>
+          <h4>4. Multiprogramming OS</h4>
+          <p>تُحمَّل عدة برامج في الذاكرة. عندما يحتاج برنامج لـ I/O، يُنفّذ برنامج آخر. الـ CPU لا يتوقف أبداً ما دامت هناك مهام.</p>
+          <div class="highlight">
+            <strong>المفهوم الأساسي:</strong> Job Pool في الـ Disk ← OS يحمّل مجموعة منها في RAM ← عند انتظار برنامج، يُنفّذ برنامج آخر
+          </div>
+          <div class="adv-dis">
+            <div class="adv-box"><h5>✅ مميزات</h5><ul><li>استغلال أمثل للـ CPU</li><li>يدعم مستخدمين متعددين</li><li>يزيد الإنتاجية (Throughput)</li></ul></div>
+            <div class="dis-box"><h5>❌ عيوب</h5><ul><li>قد يسبب Thrashing</li><li>يحتاج إدارة ذاكرة</li><li>يتطلب خوارزميات جدولة</li></ul></div>
+          </div>
+        </div>
+
+        <div class="timeline-item">
+          <div class="timeline-era">1960s–1970s</div>
+          <h4>5. Real-Time OS (RTOS)</h4>
+          <p>لتطبيقات ذات مواعيد نهائية محددة (deadlines). يُستخدم في: أنظمة تحكم السيارات، الطائرات، الروبوتات، الفضاء.</p>
+          <div class="grid-2">
+            <div class="card" style="margin:0;">
+              <h3 style="font-size:0.9rem;margin-bottom:8px;">🔴 Hard Real-Time</h3>
+              <p style="font-size:0.82rem;">ضمان إكمال المهام في وقتها تماماً. أي تأخير = فشل. مثل: أنظمة الطيران.</p>
+            </div>
+            <div class="card amber" style="margin:0;">
+              <h3 style="font-size:0.9rem;margin-bottom:8px;">🟡 Soft Real-Time</h3>
+              <p style="font-size:0.82rem;">أقل صرامة. المهام الحرجة تأخذ أولوية. يمكن دمجه مع أنظمة أخرى.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="timeline-item">
+          <div class="timeline-era">1970s–1980s</div>
+          <h4>6. Time-Sharing / Multitasking OS</h4>
+          <p>امتداد للـ Multiprogramming. التبديل السريع بين المهام. مستخدمون متعددون في نفس الوقت. يستخدم مفهوم الـ Virtual Memory. أمثلة: UNIX, CTSS, MULTICS.</p>
+          <div class="adv-dis">
+            <div class="adv-box"><h5>✅ مميزات</h5><ul><li>كل مهمة تأخذ فرصة متساوية</li><li>تقليل توقف الـ CPU</li></ul></div>
+            <div class="dis-box"><h5>❌ عيوب</h5><ul><li>مشاكل موثوقية</li><li>أمان البيانات</li><li>مشاكل التواصل</li></ul></div>
+          </div>
+        </div>
+
+        <div class="timeline-item">
+          <div class="timeline-era">1980s–1990s</div>
+          <h4>7. Multiprocessor OS (Parallel OS)</h4>
+          <p>أكثر من معالج يشتركون في Bus وClock وأحياناً الذاكرة. ينفّذون مهام متعددة في نفس الوقت.</p>
+          <div class="grid-2">
+            <div class="card" style="margin:0;">
+              <h3 style="font-size:0.9rem;margin-bottom:8px;">Symmetric (SMP)</h3>
+              <p style="font-size:0.82rem;">كل المعالجات متساوية. تشاركية في الـ Memory. أي معالج يمكنه تنفيذ أي مهمة.</p>
+              <div class="tags" style="margin-top:8px;"><span class="tag tag-green">أكثر مرونة</span><span class="tag tag-red">أغلى تصميماً</span></div>
+            </div>
+            <div class="card amber" style="margin:0;">
+              <h3 style="font-size:0.9rem;margin-bottom:8px;">Asymmetric (AMP)</h3>
+              <p style="font-size:0.82rem;">Master-Slave. المعالج الرئيسي يُجدوِل للآخرين. الـ Master يتحكم في كل شيء.</p>
+              <div class="tags" style="margin-top:8px;"><span class="tag tag-green">أرخص</span><span class="tag tag-red">إذا فشل Master فشل الكل</span></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="timeline-item">
+          <div class="timeline-era">2000s–Present</div>
+          <h4>8. Distributed OS</h4>
+          <p>أجهزة مختلفة مرتبطة بشبكة. كل جهاز له معالجه وذاكرته المحلية. نظم التشغيل تتعاون لإدارة موارد الشبكة.</p>
+          <div class="grid-2">
+            <div class="card" style="margin:0;"><h3 style="font-size:0.9rem;">Client-Server</h3></div>
+            <div class="card purple" style="margin:0;"><h3 style="font-size:0.9rem;">Peer-to-Peer (P2P)</h3></div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- SUMMARY: OS TYPES -->
+      <div class="section-summary">
+        <div class="section-summary-title">⚡ ملخص سريع — أنواع أنظمة التشغيل</div>
+        <div class="sum-row">
+          <div class="sum-item"><span class="sum-label">🌟 أهم نقطة</span> أنظمة التشغيل تطورت من Manual (بدون OS) → Mainframe → Batch → Multiprogramming → Real-Time → Time-Sharing → Multiprocessor → Distributed.</div>
+          <div class="sum-item"><span class="sum-label">❓ أشهر سؤال</span> ما الفرق بين Batch وMultiprogramming؟ — Batch: برنامج واحد في وقت واحد. Multiprogramming: عدة برامج في الذاكرة، عند انتظار أحدها يُنفَّذ غيره.</div>
+          <div class="sum-item"><span class="sum-label">⚡ Hard vs Soft</span> Hard Real-Time: أي تأخير = فشل (طيران/فضاء). Soft Real-Time: أولوية للمهام الحرجة لكن التأخير مقبول.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== SECTION: OS FRONTEND ===== -->
+    <div class="section" id="os-frontend">
+      <div class="section-title">🖥️ واجهات نظام التشغيل</div>
+      <div class="section-subtitle">Frontend view — كيف يتفاعل المستخدم مع نظام التشغيل</div>
+
+      <div class="grid-2">
+        <div class="card">
+          <div class="card-header"><div class="card-icon">⌨️</div><h3>1940s–1950s — لا واجهة</h3></div>
+          <p>برمجة مباشرة بـ Machine Language. Punch Cards وأزرار مادية. فقط المشغّلون المتخصصون يستطيعون الاستخدام.</p>
+        </div>
+        <div class="card amber">
+          <div class="card-header"><div class="card-icon">🗂️</div><h3>1950s–1960s — Batch Interface</h3></div>
+          <p>تقديم المهام على Punch Cards. المعالجة تتم دون تفاعل مباشر. واجهة غير مباشرة.</p>
+        </div>
+        <div class="card green">
+          <div class="card-header"><div class="card-icon">💻</div><h3>1960s–1970s — CLI</h3></div>
+          <p>Command Line Interface. المستخدم يكتب أوامر نصية. أمثلة: UNIX, MS-DOS. قوي لكن يحتاج حفظ أوامر كثيرة.</p>
+        </div>
+        <div class="card purple">
+          <div class="card-header"><div class="card-icon">🖱️</div><h3>1980s–Present — GUI</h3></div>
+          <p>Graphical User Interface. نوافذ وأيقونات وفأرة. بدأت في Xerox PARC، شُعبّت بـ Apple Mac ثم Windows. سهّلت الاستخدام لعموم الناس.</p>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header"><div class="card-icon">🤖</div><h3>2000s–Present — واجهات حديثة</h3></div>
+        <div class="grid-3">
+          <div style="text-align:center;padding:16px;background:var(--surface2);border-radius:8px;">
+            <div style="font-size:2rem;margin-bottom:8px;">👆</div>
+            <div style="font-weight:700;color:var(--accent);font-size:0.9rem;">Touch Interface</div>
+            <p style="font-size:0.8rem;color:var(--text-dim);margin-top:4px;">الهواتف والأجهزة اللوحية</p>
+          </div>
+          <div style="text-align:center;padding:16px;background:var(--surface2);border-radius:8px;">
+            <div style="font-size:2rem;margin-bottom:8px;">🎙️</div>
+            <div style="font-weight:700;color:var(--accent2);font-size:0.9rem;">Voice Interface</div>
+            <p style="font-size:0.8rem;color:var(--text-dim);margin-top:4px;">Siri, Google Assistant</p>
+          </div>
+          <div style="text-align:center;padding:16px;background:var(--surface2);border-radius:8px;">
+            <div style="font-size:2rem;margin-bottom:8px;">🤲</div>
+            <div style="font-weight:700;color:var(--accent3);font-size:0.9rem;">Gesture Interface</div>
+            <p style="font-size:0.8rem;color:var(--text-dim);margin-top:4px;">AI-driven interactions</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- SUMMARY: OS FRONTEND -->
+      <div class="section-summary">
+        <div class="section-summary-title">⚡ ملخص سريع — واجهات نظام التشغيل</div>
+        <div class="sum-row">
+          <div class="sum-item"><span class="sum-label">🌟 أهم نقطة</span> الواجهات تطورت: لا واجهة → Batch → CLI → GUI → Touch/Voice/Gesture. كل واجهة ظهرت لحل محدودية السابقة.</div>
+          <div class="sum-item"><span class="sum-label">❓ أشهر سؤال</span> ما الفرق بين CLI وGUI؟ — CLI: أوامر نصية، أسرع وأقوى للمتخصصين. GUI: نوافذ وأيقونات، أسهل للمستخدم العادي.</div>
+          <div class="sum-item"><span class="sum-label">💡 نقطة تذكّر</span> GUI بدأت في Xerox PARC، انتشرت بـ Apple Mac 1984 ثم Windows.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== SECTION: PROCESS MANAGEMENT ===== -->
+    <div class="section" id="process-mgmt">
+      <div class="section-title">⚙️ إدارة العمليات (Process Management)</div>
+      <div class="section-subtitle">دورة حياة العملية، حالاتها، الـ PCB، والـ Dispatcher</div>
+
+      <div class="card">
+        <div class="card-header"><div class="card-icon">🔄</div><h3>ما هي العملية (Process)؟</h3></div>
+        <p>برنامج يُنفَّذ حالياً على الحاسوب. نسخة نشطة تستخدم موارد النظام (CPU, Memory, I/O).</p>
+        <div class="highlight">
+          <strong>أقسام العملية في الذاكرة:</strong>
+          <ol style="margin-top:8px;padding-right:20px;">
+            <li><strong>Text/Code Segment:</strong> الكود التنفيذي</li>
+            <li><strong>Data Segment:</strong> المتغيرات العامة والثابتة</li>
+            <li><strong>Heap:</strong> التخصيص الديناميكي للذاكرة</li>
+            <li><strong>Stack:</strong> نداءات الدوال والمتغيرات المحلية</li>
+            <li><strong>Memory-mapped Region:</strong> المكتبات المشتركة</li>
+          </ol>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header"><div class="card-icon">🔵</div><h3>حالات العملية (Process States)</h3></div>
+        <div class="diagram">
+          <div class="diagram-title">دورة حياة العملية</div>
+          <div class="process-states" style="gap:8px;flex-direction:row;justify-content:center;flex-wrap:wrap;">
+            <div class="state-box state-new">New</div>
+            <div class="arrow">→</div>
+            <div class="state-box state-ready">Ready</div>
+            <div class="arrow">⇄</div>
+            <div class="state-box state-running">Running</div>
+            <div class="arrow">→</div>
+            <div class="state-box state-terminated">Terminated</div>
+          </div>
+          <div style="margin-top:16px;display:flex;justify-content:center;align-items:center;gap:8px;">
+            <div class="state-box state-running" style="font-size:0.75rem;">Running</div>
+            <div class="arrow">↓</div>
+            <div class="state-box state-waiting">Waiting</div>
+            <div class="arrow">→</div>
+            <div class="state-box state-ready">Ready</div>
+          </div>
+        </div>
+        <table class="comp-table" style="margin-top:12px;">
+          <tr><th>الحالة</th><th>الوصف</th></tr>
+          <tr><td style="color:#34d399;">🟢 New</td><td>تم إنشاء العملية، لم تُجهَّز بعد للتنفيذ</td></tr>
+          <tr><td style="color:#00d4ff;">🔵 Ready</td><td>محمّلة في الذاكرة، تنتظر الـ CPU</td></tr>
+          <tr><td style="color:#a78bfa;">🟣 Running</td><td>تُنفَّذ حالياً على الـ CPU</td></tr>
+          <tr><td style="color:#fbbf24;">🟡 Waiting/Blocked</td><td>تنتظر حدثاً خارجياً (مثل I/O)</td></tr>
+          <tr><td style="color:#f87171;">🔴 Terminated</td><td>أنهت التنفيذ أو فشلت</td></tr>
+          <tr><td style="color:#94a3b8;">⚫ Ready Suspended</td><td>في الذاكرة الثانوية، جاهزة للعودة</td></tr>
+          <tr><td style="color:#94a3b8;">⚫ Waiting Suspended</td><td>تنتظر حدثاً وخرجت من الذاكرة</td></tr>
+        </table>
+      </div>
+
+      <div class="grid-2">
+        <div class="card green">
+          <div class="card-header"><div class="card-icon">📋</div><h3>PCB (Process Control Block)</h3></div>
+          <p>هيكل بيانات يحتفظ بمعلومات كل عملية:</p>
+          <ul style="margin-top:8px;">
+            <li>حالة العملية (Process State)</li>
+            <li>أولوية العملية (Priority)</li>
+            <li>الموارد المستخدمة</li>
+            <li>رقم تعريف العملية (PID)</li>
+          </ul>
+        </div>
+        <div class="card amber">
+          <div class="card-header"><div class="card-icon">🚀</div><h3>الـ Dispatcher</h3></div>
+          <p>المكوّن المسؤول عن نقل التحكم من الـ Scheduler إلى العملية المختارة فعلياً.</p>
+          <ul style="margin-top:8px;">
+            <li><strong>Context Switching:</strong> حفظ وتحميل حالة العملية</li>
+            <li><strong>Resource Allocation:</strong> تخصيص الموارد</li>
+            <li><strong>Control Transfer:</strong> نقل التحكم للـ CPU</li>
+          </ul>
+          <div class="highlight warning" style="margin-top:8px;">
+            <strong>Dispatch Latency:</strong> الوقت اللازم لإيقاف عملية وتشغيل أخرى
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header"><div class="card-icon">⚡</div><h3>الـ Interrupt (المقاطعة)</h3></div>
+        <p>إشارة تُرسَل للـ CPU تقول: "توقف عما تفعله، هناك شيء مهم يحتاج انتباهك فوراً".</p>
+        <div class="grid-2" style="margin-top:12px;">
+          <div class="card" style="margin:0;">
+            <h3 style="font-size:0.9rem;color:var(--accent)">🔧 Hardware Interrupt</h3>
+            <p style="font-size:0.82rem;">تأتي من أجهزة خارجية. مثل: ضغطة كيبورد، انتهاء طباعة، إشارة شبكة.</p>
+          </div>
+          <div class="card amber" style="margin:0;">
+            <h3 style="font-size:0.9rem;color:var(--accent4)">💻 Software Interrupt</h3>
+            <p style="font-size:0.82rem;">تأتي من البرامج. مثل: System Calls، أخطاء تقسيم على صفر.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- SUMMARY: PROCESS MANAGEMENT -->
+      <div class="section-summary">
+        <div class="section-summary-title">⚡ ملخص سريع — إدارة العمليات</div>
+        <div class="sum-row">
+          <div class="sum-item"><span class="sum-label">🌟 أهم نقطة</span> العملية تمر بـ 5 حالات: New → Ready → Running → Waiting → Terminated. الـ PCB هو "هوية" كل عملية في النظام.</div>
+          <div class="sum-item"><span class="sum-label">❓ أشهر سؤال</span> ما الفرق بين Process وProgram؟ — البرنامج كود ساكن على الديسك. العملية برنامج يُنفَّذ حالياً ويستخدم موارد (CPU, RAM, I/O).</div>
+          <div class="sum-item"><span class="sum-label">⚙️ فرق مهم</span> Scheduler يختار العملية. Dispatcher ينقل التحكم فعلياً للـ CPU. Dispatch Latency = وقت هذه العملية.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== SECTION: SCHEDULING ===== -->
+    <div class="section" id="scheduling">
+      <div class="section-title">📅 خوارزميات الجدولة (CPU Scheduling)</div>
+      <div class="section-subtitle">أنواع الجدولة، معايير التقييم، وأمثلة محلولة لكل خوارزمية</div>
+
+      <div class="card">
+        <div class="card-header"><div class="card-icon">📊</div><h3>معايير تقييم الجدولة</h3></div>
+        <table class="comp-table">
+          <tr><th>المعيار</th><th>المعنى</th><th>الهدف</th></tr>
+          <tr><td><strong>CPU Utilization</strong></td><td>نسبة انشغال الـ CPU</td><td>أقصى قيمة ✅</td></tr>
+          <tr><td><strong>Throughput</strong></td><td>عدد العمليات المنتهية في الوحدة الزمنية</td><td>أقصى قيمة ✅</td></tr>
+          <tr><td><strong>Turnaround Time</strong></td><td>الوقت من دخول العملية حتى إنهائها</td><td>أقل قيمة ✅</td></tr>
+          <tr><td><strong>Waiting Time</strong></td><td>الوقت في Ready Queue</td><td>أقل قيمة ✅</td></tr>
+          <tr><td><strong>Response Time</strong></td><td>وقت أول استجابة</td><td>أقل قيمة ✅</td></tr>
+        </table>
+      </div>
+
+      <div class="grid-2">
+        <div class="card">
+          <div class="card-header"><div class="card-icon">🔁</div><h3>Preemptive vs Non-Preemptive</h3></div>
+          <div class="highlight">
+            <strong>Preemptive:</strong> الـ OS يمكنه إيقاف عملية جارية وتشغيل أخرى.
+          </div>
+          <div class="highlight warning">
+            <strong>Non-Preemptive:</strong> لا يمكن إيقاف العملية حتى تنتهي أو تتخلى عن الـ CPU.
+          </div>
+        </div>
+        <div class="card amber">
+          <div class="card-header"><div class="card-icon">📐</div><h3>الصيغ الأساسية</h3></div>
+          <div class="formula">Turnaround = Completion - Arrival</div>
+          <div class="formula">Waiting = Turnaround - Burst Time</div>
+          <div class="formula">Response = First Run - Arrival</div>
+          <div class="formula">Avg Waiting = Σ Waiting / n</div>
+        </div>
+      </div>
+
+      <!-- FCFS -->
+      <div class="algo-card">
+        <div class="algo-header">
+          <h3>1️⃣ FCFS — First Come First Served</h3>
+          <span class="tag tag-blue">Non-Preemptive</span>
+        </div>
+        <div class="algo-body">
+          <p style="color:var(--text-dim);font-size:0.88rem;margin-bottom:12px;">الأبسط — أول من وصل أول من يُخدَم. مثل الطابور.</p>
+          <div class="highlight warning">⚠️ يعاني من <strong>Convoy Effect</strong> — عملية طويلة تُعيق العمليات القصيرة خلفها.</div>
+
+          <h4 style="margin:16px 0 8px;font-size:0.9rem;color:var(--accent)">📝 مثال محلول:</h4>
+          <table class="process-table">
+            <tr><th>Process</th><th>Arrival</th><th>Burst</th></tr>
+            <tr><td>P1</td><td>0</td><td>24</td></tr>
+            <tr><td>P2</td><td>0</td><td>3</td></tr>
+            <tr><td>P3</td><td>0</td><td>3</td></tr>
+          </table>
+
+          <p style="font-size:0.85rem;color:var(--text-dim);margin:8px 0;">Gantt Chart:</p>
+          <div class="gantt">
+            <div class="gantt-block"><div class="gantt-bar g-p1" style="width:120px;">P1</div><span class="gantt-time">0</span></div>
+            <div class="gantt-block"><div class="gantt-bar g-p2" style="width:15px;">P2</div><span class="gantt-time" style="right:-10px;">24</span></div>
+            <div class="gantt-block"><div class="gantt-bar g-p3" style="width:15px;">P3</div><span class="gantt-time" style="right:-10px;">27</span></div>
+            <span style="margin-right:6px;font-size:0.8rem;color:var(--text-dim);align-self:flex-end;padding-bottom:30px;">30</span>
+          </div>
+
+          <div class="formula">
+            WT(P1)=0, WT(P2)=24, WT(P3)=27<br>
+            Average Waiting Time = (0+24+27)/3 = <strong>17 ms</strong>
+          </div>
+        </div>
+      </div>
+
+      <!-- SJF -->
+      <div class="algo-card">
+        <div class="algo-header">
+          <h3>2️⃣ SJF — Shortest Job First</h3>
+          <span class="tag tag-purple">Non-Preemptive / Preemptive</span>
+        </div>
+        <div class="algo-body">
+          <p style="color:var(--text-dim);font-size:0.88rem;margin-bottom:12px;">ينفّذ العملية ذات أقل Burst Time أولاً. النسخة الـ Preemptive تُسمّى <strong>SRTF (Shortest Remaining Time First)</strong>.</p>
+          <div class="highlight success">✅ يعطي أقل Average Waiting Time نظرياً (Optimal).</div>
+          <div class="highlight warning">⚠️ مشكلة: لا يمكن معرفة Burst Time مسبقاً في الواقع (يحتاج تنبؤ).</div>
+
+          <h4 style="margin:16px 0 8px;font-size:0.9rem;color:var(--accent)">📝 مثال محلول (Non-Preemptive):</h4>
+          <table class="process-table">
+            <tr><th>Process</th><th>Arrival</th><th>Burst</th></tr>
+            <tr><td>P1</td><td>0</td><td>6</td></tr>
+            <tr><td>P2</td><td>2</td><td>8</td></tr>
+            <tr><td>P3</td><td>4</td><td>7</td></tr>
+            <tr><td>P4</td><td>5</td><td>3</td></tr>
+          </table>
+
+          <ol class="steps" style="margin-top:12px;">
+            <li>t=0: فقط P1 متاحة → تُنفَّذ P1 (burst=6)</li>
+            <li>t=6: المتاحة P2(8), P3(7), P4(3) → أقلها P4 (3) → تُنفَّذ P4</li>
+            <li>t=9: المتاحة P2(8), P3(7) → أقلها P3 (7) → تُنفَّذ P3</li>
+            <li>t=16: المتاحة P2(8) → تُنفَّذ P2</li>
+          </ol>
+
+          <div class="gantt" style="margin-top:12px;">
+            <div class="gantt-block"><div class="gantt-bar g-p1" style="width:60px;">P1</div><span class="gantt-time">0</span></div>
+            <div class="gantt-block"><div class="gantt-bar g-p4" style="width:30px;">P4</div><span class="gantt-time">6</span></div>
+            <div class="gantt-block"><div class="gantt-bar g-p3" style="width:70px;">P3</div><span class="gantt-time">9</span></div>
+            <div class="gantt-block"><div class="gantt-bar g-p2" style="width:80px;">P2</div><span class="gantt-time">16</span></div>
+            <span style="margin-right:6px;font-size:0.8rem;color:var(--text-dim);align-self:flex-end;padding-bottom:30px;">24</span>
+          </div>
+
+          <div class="formula">
+            WT(P1)=0, WT(P2)=16-2=14, WT(P3)=9-4=5, WT(P4)=6-5=1<br>
+            Average WT = (0+14+5+1)/4 = <strong>5 ms</strong>
+          </div>
+        </div>
+      </div>
+
+      <!-- Priority -->
+      <div class="algo-card">
+        <div class="algo-header">
+          <h3>3️⃣ Priority Scheduling</h3>
+          <span class="tag tag-amber">Preemptive / Non-Preemptive</span>
+        </div>
+        <div class="algo-body">
+          <p style="color:var(--text-dim);font-size:0.88rem;margin-bottom:12px;">لكل عملية أولوية. العملية ذات الأولوية الأعلى تُنفَّذ أولاً. (رقم أصغر = أولوية أعلى عادةً)</p>
+
+          <div class="grid-2">
+            <div class="highlight danger">
+              <strong>🚨 Starvation:</strong> العمليات ذات الأولوية المنخفضة قد لا تُنفَّذ أبداً إذا وصلت عمليات عالية الأولوية باستمرار.
+            </div>
+            <div class="highlight success">
+              <strong>✅ Aging (الحل):</strong> تزيد أولوية العملية كلما طال انتظارها في الـ Ready Queue.
+            </div>
+          </div>
+
+          <h4 style="margin:16px 0 8px;font-size:0.9rem;color:var(--accent)">📝 مثال:</h4>
+          <table class="process-table">
+            <tr><th>Process</th><th>Burst</th><th>Priority</th></tr>
+            <tr><td>P1</td><td>10</td><td>3</td></tr>
+            <tr><td>P2</td><td>1</td><td>1</td></tr>
+            <tr><td>P3</td><td>2</td><td>4</td></tr>
+            <tr><td>P4</td><td>1</td><td>5</td></tr>
+            <tr><td>P5</td><td>5</td><td>2</td></tr>
+          </table>
+          <div class="gantt" style="margin-top:12px;">
+            <div class="gantt-block"><div class="gantt-bar g-p2" style="width:10px;">P2</div><span class="gantt-time">0</span></div>
+            <div class="gantt-block"><div class="gantt-bar g-p4" style="width:50px;">P5</div><span class="gantt-time">1</span></div>
+            <div class="gantt-block"><div class="gantt-bar g-p1" style="width:100px;">P1</div><span class="gantt-time">6</span></div>
+            <div class="gantt-block"><div class="gantt-bar g-p3" style="width:20px;">P3</div><span class="gantt-time">16</span></div>
+            <div class="gantt-block"><div class="gantt-bar g-idle" style="width:10px;">P4</div><span class="gantt-time">18</span></div>
+            <span style="margin-right:6px;font-size:0.8rem;color:var(--text-dim);align-self:flex-end;padding-bottom:30px;">19</span>
+          </div>
+          <div class="formula">Average WT = (6+0+16+18+1)/5 = <strong>8.2 ms</strong></div>
+        </div>
+      </div>
+
+      <!-- Round Robin -->
+      <div class="algo-card">
+        <div class="algo-header">
+          <h3>4️⃣ Round Robin (RR)</h3>
+          <span class="tag tag-green">Preemptive</span>
+        </div>
+        <div class="algo-body">
+          <p style="color:var(--text-dim);font-size:0.88rem;margin-bottom:12px;">كل عملية تحصل على <strong>Time Quantum (q)</strong> ثابت. إذا لم تنتهي، تعود لآخر القائمة.</p>
+          <div class="highlight">
+            <strong>Time Quantum:</strong> عادة 10-100 ms. إذا كان صغيراً جداً → overhead كبير. إذا كان كبيراً جداً → يصبح FCFS.
+          </div>
+
+          <h4 style="margin:16px 0 8px;font-size:0.9rem;color:var(--accent)">📝 مثال (q=4):</h4>
+          <table class="process-table">
+            <tr><th>Process</th><th>Burst Time</th></tr>
+            <tr><td>P1</td><td>24</td></tr>
+            <tr><td>P2</td><td>3</td></tr>
+            <tr><td>P3</td><td>3</td></tr>
+          </table>
+
+          <ol class="steps" style="margin-top:12px;">
+            <li>t=0→4: P1 ينفّذ 4ms (متبقي 20)</li>
+            <li>t=4→7: P2 ينفّذ 3ms (انتهى!)</li>
+            <li>t=7→10: P3 ينفّذ 3ms (انتهى!)</li>
+            <li>t=10→14: P1 ينفّذ 4ms (متبقي 16)</li>
+            <li>... وهكذا حتى ينتهي P1 عند t=30</li>
+          </ol>
+
+          <div class="gantt">
+            <div class="gantt-block"><div class="gantt-bar g-p1" style="width:40px;font-size:0.7rem;">P1</div><span class="gantt-time">0</span></div>
+            <div class="gantt-block"><div class="gantt-bar g-p2" style="width:30px;font-size:0.7rem;">P2</div><span class="gantt-time">4</span></div>
+            <div class="gantt-block"><div class="gantt-bar g-p3" style="width:30px;font-size:0.7rem;">P3</div><span class="gantt-time">7</span></div>
+            <div class="gantt-block"><div class="gantt-bar g-p1" style="width:40px;font-size:0.7rem;">P1</div><span class="gantt-time">10</span></div>
+            <div class="gantt-block"><div class="gantt-bar g-p1" style="width:40px;font-size:0.7rem;">P1</div><span class="gantt-time">14</span></div>
+            <div style="display:flex;align-items:center;font-size:0.7rem;color:var(--text-dim);padding-bottom:30px;">... P1 x4</div>
+            <span style="margin-right:6px;font-size:0.8rem;color:var(--text-dim);align-self:flex-end;padding-bottom:30px;">30</span>
+          </div>
+
+          <div class="formula">
+            WT(P1) = 30-24 = 6, WT(P2) = 4-0 = 4, WT(P3) = 7-0 = 7<br>
+            Average WT = (6+4+7)/3 = <strong>5.67 ms</strong>
+          </div>
+        </div>
+      </div>
+
+      <!-- Multilevel Queue -->
+      <div class="card">
+        <div class="card-header"><div class="card-icon">📚</div><h3>Multilevel Queue</h3></div>
+        <p>تقسيم Ready Queue إلى قوائم متعددة حسب نوع العملية، كل قائمة لها خوارزمية جدولة خاصة.</p>
+        <table class="comp-table" style="margin-top:12px;">
+          <tr><th>المستوى</th><th>النوع</th><th>الأولوية</th><th>الخوارزمية</th></tr>
+          <tr><td>1</td><td>System Processes</td><td style="color:#34d399;">الأعلى</td><td>Real-time</td></tr>
+          <tr><td>2</td><td>Interactive Processes</td><td style="color:#00d4ff;">عالية</td><td>Round Robin</td></tr>
+          <tr><td>3</td><td>Interactive Editing</td><td>متوسطة</td><td>Round Robin</td></tr>
+          <tr><td>4</td><td>Batch Processes</td><td style="color:#f87171;">منخفضة</td><td>FCFS</td></tr>
+        </table>
+      </div>
+
+      <!-- MEGA COMPARISON TABLE -->
+      <div class="card" style="margin-top:8px;">
+        <div class="card-header"><div class="card-icon">🏆</div><h3>جدول المقارنة النهائي — كل الخوارزميات</h3></div>
+        <table class="comp-table mega-comp" style="margin-top:8px;">
+          <tr>
+            <th>الخوارزمية</th>
+            <th>Preemptive?</th>
+            <th>Starvation?</th>
+            <th>سريع؟</th>
+            <th>عادل؟</th>
+            <th>أفضل لـ</th>
+          </tr>
+          <tr>
+            <td><strong style="color:#00d4ff;">FCFS</strong></td>
+            <td><span class="no">لا</span></td>
+            <td><span class="no">لا</span></td>
+            <td><span class="partial">متوسط</span></td>
+            <td><span class="yes">نعم</span></td>
+            <td>أنظمة بسيطة / Batch</td>
+          </tr>
+          <tr>
+            <td><strong style="color:#a78bfa;">SJF</strong></td>
+            <td><span class="no">لا (SRTF: نعم)</span></td>
+            <td><span class="yes">نعم ⚠️</span></td>
+            <td><span class="yes">الأسرع نظرياً</span></td>
+            <td><span class="no">لا</span></td>
+            <td>أقل Avg WT — لكن يحتاج معرفة Burst</td>
+          </tr>
+          <tr>
+            <td><strong style="color:#34d399;">Round Robin</strong></td>
+            <td><span class="yes">نعم</span></td>
+            <td><span class="no">لا</span></td>
+            <td><span class="partial">يعتمد على Quantum</span></td>
+            <td><span class="yes">الأعدل</span></td>
+            <td>Time-Sharing / تفاعلي</td>
+          </tr>
+          <tr>
+            <td><strong style="color:#fbbf24;">Priority</strong></td>
+            <td><span class="partial">كلاهما ممكن</span></td>
+            <td><span class="yes">نعم ⚠️</span></td>
+            <td><span class="yes">جيد</span></td>
+            <td><span class="no">لا</span></td>
+            <td>أنظمة حرجة / Real-Time (مع Aging)</td>
+          </tr>
+        </table>
+        <div class="highlight warning" style="margin-top:12px;">
+          <strong>⚠️ نقطة مهمة:</strong> Starvation الحل دائماً = <strong>Aging</strong> (نرفع أولوية العملية كلما طال انتظارها).
+          <br>إذا Quantum صغير جداً في RR → Context Switching كثير = بطء. إذا كبير جداً → يصبح FCFS.
+        </div>
+      </div>
+
+      <!-- SUMMARY: SCHEDULING -->
+      <div class="section-summary">
+        <div class="section-summary-title">⚡ ملخص سريع — خوارزميات الجدولة</div>
+        <div class="sum-row">
+          <div class="sum-item"><span class="sum-label">🌟 أهم نقطة</span> SJF يعطي أقل Average Waiting Time نظرياً لكنه غير عملي (لا نعرف Burst مسبقاً). Round Robin الأعدل للـ Time-Sharing.</div>
+          <div class="sum-item"><span class="sum-label">❓ أشهر سؤال</span> ما الفرق بين SJF وSRTF؟ — SJF غير قاطع (Non-Preemptive)، يكمل العملية. SRTF قاطع (Preemptive)، يوقف العملية لو وصلت أقصر منها.</div>
+          <div class="sum-item"><span class="sum-label">🔢 المعادلات</span> TAT = CT − AT &nbsp;|&nbsp; WT = TAT − BT &nbsp;|&nbsp; RT = وقت أول استجابة − AT</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== SECTION: THREADS ===== -->
+    <div class="section" id="threads">
+      <div class="section-title">🧵 الخيوط (Threads)</div>
+      <div class="section-subtitle">وحدة أساسية لاستغلال الـ CPU — خيط واحد أو عدة خيوط داخل نفس العملية</div>
+
+      <div class="card">
+        <div class="card-header"><div class="card-icon">🧵</div><h3>ما هو الخيط؟</h3></div>
+        <p>تدفق تنفيذ واحد ويُعتبر وحدة أساسية من وحدات استخدام الـ CPU. الخيط هو تسلسل من التعليمات داخل عملية.</p>
+        <div class="grid-2" style="margin-top:12px;">
+          <div class="highlight">
+            <strong>المشترك بين الخيوط:</strong>
+            <ul style="margin-top:6px;padding-right:16px;">
+              <li>Code Segment</li>
+              <li>Data Segment</li>
+              <li>Heap</li>
+            </ul>
+          </div>
+          <div class="highlight warning">
+            <strong>الخاص بكل خيط:</strong>
+            <ul style="margin-top:6px;padding-right:16px;">
+              <li>Thread ID</li>
+              <li>Program Counter (PC)</li>
+              <li>Registers</li>
+              <li>Stack</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <div class="card green">
+        <div class="card-header"><div class="card-icon">⚡</div><h3>مثال: Threaded vs Non-Threaded</h3></div>
+        <div class="grid-2">
+          <div>
+            <h4 style="color:var(--accent5);font-size:0.9rem;margin-bottom:8px;">❌ بدون خيوط (7 عمليات)</h4>
+            <div class="formula" style="font-size:0.8rem;">(a+b) + (c+d) + (e+f) + g<br>= خطوة بعد خطوة = 7 عمليات حسابية</div>
+          </div>
+          <div>
+            <h4 style="color:var(--accent3);font-size:0.9rem;margin-bottom:8px;">✅ مع خيوط (4 عمليات فعلية)</h4>
+            <div class="formula" style="font-size:0.8rem;">Thread1: (a+b)+(c+d) = 3 عمليات<br>Thread2: (e+f)+g = 3 عمليات<br>يعملان معاً = 3 فقط + 1 للجمع النهائي</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header"><div class="card-icon">🏗️</div><h3>نماذج الخيوط (Threading Models)</h3></div>
+        <div class="grid-3">
+          <div style="background:var(--surface2);border-radius:8px;padding:14px;border:1px solid var(--border);">
+            <h4 style="color:var(--accent);font-size:0.88rem;margin-bottom:8px;">User-Level Threads</h4>
+            <p style="font-size:0.8rem;color:var(--text-dim);">في مساحة المستخدم. الـ Kernel لا يعرف بها. سريعة الإنشاء. إذا انتظر خيط → تنتظر العملية كلها.</p>
+          </div>
+          <div style="background:var(--surface2);border-radius:8px;padding:14px;border:1px solid var(--border);">
+            <h4 style="color:var(--accent2);font-size:0.88rem;margin-bottom:8px;">Kernel-Level Threads</h4>
+            <p style="font-size:0.8rem;color:var(--text-dim);">يديرها الـ Kernel مباشرة. أبطأ في الإنشاء. إذا انتظر خيط، يُنفَّذ خيط آخر من نفس العملية.</p>
+          </div>
+          <div style="background:var(--surface2);border-radius:8px;padding:14px;border:1px solid var(--border);">
+            <h4 style="color:var(--accent3);font-size:0.88rem;margin-bottom:8px;">Hybrid Threads</h4>
+            <p style="font-size:0.8rem;color:var(--text-dim);">يجمع مميزات النوعين. Kernel Threads تحمل User Threads متعددة.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="card amber">
+        <div class="card-header"><div class="card-icon">🔗</div><h3>نماذج التعدد (Multithreading Models)</h3></div>
+        <table class="comp-table">
+          <tr><th>النموذج</th><th>الوصف</th><th>المميزات</th><th>العيوب</th></tr>
+          <tr>
+            <td><strong>One-to-One</strong></td>
+            <td>كل User Thread ↔ Kernel Thread</td>
+            <td style="color:#34d399;">تزامن حقيقي</td>
+            <td style="color:#f87171;">overhead كبير</td>
+          </tr>
+          <tr>
+            <td><strong>Many-to-One</strong></td>
+            <td>كل User Threads → Kernel Thread واحد</td>
+            <td style="color:#34d399;">خفيف</td>
+            <td style="color:#f87171;">لا تزامن حقيقي</td>
+          </tr>
+          <tr>
+            <td><strong>Many-to-Many</strong></td>
+            <td>M User Threads ↔ N Kernel Threads (M≥N)</td>
+            <td style="color:#34d399;">أفضل توازن</td>
+            <td style="color:#f87171;">معقد</td>
+          </tr>
+        </table>
+      </div>
+
+      <!-- THREAD DIAGRAM: User vs Kernel -->
+      <div class="card">
+        <div class="card-header"><div class="card-icon">🖼️</div><h3>رسم توضيحي — User Threads vs Kernel Threads</h3></div>
+        <div class="thread-diagram">
+
+          <!-- User Threads Box -->
+          <div class="thread-box">
+            <div class="thread-box-title ut">👤 User-Level Threads</div>
+            <div class="thread-layers">
+              <div class="t-layer t-user">Thread A</div>
+              <div class="t-layer t-user">Thread B</div>
+              <div class="t-layer t-user">Thread C</div>
+              <div class="t-sep">── Thread Library (مكتبة في User Space) ──</div>
+              <div class="t-arrow">⬇ map</div>
+              <div class="t-layer t-kernel">Kernel Thread واحد فقط</div>
+              <div class="t-sep">── Kernel ──</div>
+              <div style="font-size:0.75rem;color:var(--text-dim);padding:8px;line-height:1.6;">
+                ✅ إنشاء سريع — لا يحتاج System Call<br>
+                ✅ Context Switch سريع<br>
+                ❌ لو انتظر خيط → تنتظر العملية كلها<br>
+                ❌ الـ Kernel لا يعرف بها
+              </div>
+            </div>
+          </div>
+
+          <!-- Kernel Threads Box -->
+          <div class="thread-box">
+            <div class="thread-box-title kt">⚙️ Kernel-Level Threads</div>
+            <div class="thread-layers">
+              <div class="t-layer t-user">Thread A</div>
+              <div class="t-layer t-user">Thread B</div>
+              <div class="t-layer t-user">Thread C</div>
+              <div class="t-sep">── Kernel يدير كل خيط مباشرة ──</div>
+              <div class="t-arrow">⬇ 1:1 map</div>
+              <div style="display:flex;gap:6px;justify-content:center;">
+                <div class="t-layer t-kernel" style="flex:1;">KT1</div>
+                <div class="t-layer t-kernel" style="flex:1;">KT2</div>
+                <div class="t-layer t-kernel" style="flex:1;">KT3</div>
+              </div>
+              <div class="t-sep">── Kernel ──</div>
+              <div style="font-size:0.75rem;color:var(--text-dim);padding:8px;line-height:1.6;">
+                ✅ لو انتظر خيط → ينفَّذ خيط آخر<br>
+                ✅ تزامن حقيقي على Multi-Core<br>
+                ❌ إنشاء أبطأ — يحتاج System Call<br>
+                ❌ Context Switch أغلى
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- SUMMARY: THREADS -->
+      <div class="section-summary">
+        <div class="section-summary-title">⚡ ملخص سريع — الخيوط (Threads)</div>
+        <div class="sum-row">
+          <div class="sum-item"><span class="sum-label">🌟 أهم نقطة</span> الخيوط تشارك الـ Code والـ Data والـ Heap. كل خيط له Stack وRegisters وProgram Counter خاص به.</div>
+          <div class="sum-item"><span class="sum-label">❓ أشهر سؤال</span> ما الفرق بين User Thread وKernel Thread؟ — User: سريع، الـ Kernel لا يعرفه، مشكلة الانتظار. Kernel: أبطأ في الإنشاء، لكن يدعم التزامن الحقيقي.</div>
+          <div class="sum-item"><span class="sum-label">📊 النماذج</span> Many-to-Many = الأفضل (يجمع مميزات النوعين). One-to-One = تزامن حقيقي لكن overhead. Many-to-One = لا تزامن حقيقي.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== SECTION: DEADLOCK ===== -->
+    <div class="section" id="deadlock">
+      <div class="section-title">🔒 الـ Deadlock</div>
+      <div class="section-subtitle">الشروط الأربعة + طرق الكشف والمنع والتجنب</div>
+
+      <div class="card">
+        <div class="card-header"><div class="card-icon">🔒</div><h3>ما هو الـ Deadlock؟</h3></div>
+        <p>حالة تكون فيها مجموعة من العمليات في حالة انتظار دائم — كل عملية تنتظر موارد تحتلها عملية أخرى تنتظر هي الأخرى.</p>
+        <div class="highlight danger">
+          <strong>مثال:</strong> P1 تمتلك R1 وتنتظر R2. P2 تمتلك R2 وتنتظر R1. → توقف تام!
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header"><div class="card-icon">⚠️</div><h3>الشروط الأربعة للـ Deadlock (Coffman Conditions)</h3></div>
+        <p style="margin-bottom:12px;font-size:0.88rem;color:var(--text-dim);">يجب أن تتحقق جميعها في نفس الوقت لحدوث Deadlock:</p>
+        <div class="grid-2">
+          <div class="card red" style="margin:0;">
+            <h3 style="font-size:0.9rem;">1️⃣ Mutual Exclusion</h3>
+            <p style="font-size:0.82rem;">المورد لا يمكن استخدامه من أكثر من عملية في نفس الوقت.</p>
+          </div>
+          <div class="card amber" style="margin:0;">
+            <h3 style="font-size:0.9rem;">2️⃣ Hold and Wait</h3>
+            <p style="font-size:0.82rem;">عملية تمتلك موارد وتنتظر موارد إضافية عند عمليات أخرى.</p>
+          </div>
+          <div class="card purple" style="margin:0;">
+            <h3 style="font-size:0.9rem;">3️⃣ No Preemption</h3>
+            <p style="font-size:0.82rem;">لا يمكن أخذ المورد من العملية بالقوة. يُحرَّر طوعاً فقط.</p>
+          </div>
+          <div class="card" style="margin:0;">
+            <h3 style="font-size:0.9rem;">4️⃣ Circular Wait</h3>
+            <p style="font-size:0.82rem;">سلسلة دائرية: P1 تنتظر P2 تنتظر P3 تنتظر P1.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="card green">
+        <div class="card-header"><div class="card-icon">🛡️</div><h3>طرق التعامل مع الـ Deadlock</h3></div>
+        <div class="grid-3">
+          <div style="background:var(--surface2);border-radius:8px;padding:14px;border:1px solid rgba(239,68,68,0.2);">
+            <h4 style="color:#f87171;font-size:0.88rem;margin-bottom:8px;">🔍 Detection (الكشف)</h4>
+            <p style="font-size:0.8rem;color:var(--text-dim);">Resource Scheduler يتتبع الموارد. بعد الكشف: إنهاء العمليات أو سحب موارد منها.</p>
+          </div>
+          <div style="background:var(--surface2);border-radius:8px;padding:14px;border:1px solid rgba(245,158,11,0.2);">
+            <h4 style="color:#fbbf24;font-size:0.88rem;margin-bottom:8px;">🚫 Prevention (المنع)</h4>
+            <p style="font-size:0.8rem;color:var(--text-dim);">نمنع أحد الشروط الأربعة من التحقق قبل تنفيذ أي معاملة.</p>
+          </div>
+          <div style="background:var(--surface2);border-radius:8px;padding:14px;border:1px solid rgba(16,185,129,0.2);">
+            <h4 style="color:#34d399;font-size:0.88rem;margin-bottom:8px;">🏃 Avoidance (التجنب)</h4>
+            <p style="font-size:0.8rem;color:var(--text-dim);">نستخدم Wait-for Graph لتجنب الـ Deadlock. مفيد للأنظمة الصغيرة.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="grid-2">
+        <div class="card amber">
+          <div class="card-header"><div class="card-icon">😵</div><h3>Starvation</h3></div>
+          <p>عملية ذات أولوية منخفضة تنتظر للأبد لأن دائماً تأتي عمليات ذات أولوية أعلى.</p>
+          <div class="highlight warning" style="margin-top:8px;"><strong>الحل: Aging</strong> — نزيد أولوية العملية كلما طال انتظارها.</div>
+        </div>
+        <div class="card">
+          <div class="card-header"><div class="card-icon">🔄</div><h3>IPC (Inter-Process Communication)</h3></div>
+          <p>العمليات تتواصل مع بعضها عبر IPC.</p>
+          <ul style="margin-top:8px;">
+            <li><strong>Shared Memory</strong> — مساحة ذاكرة مشتركة</li>
+            <li><strong>Message Passing</strong> — إرسال رسائل</li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- BANKER'S ALGORITHM -->
+      <div class="card purple">
+        <div class="card-header"><div class="card-icon">🏦</div><h3>Banker's Algorithm (خوارزمية المصرفي)</h3></div>
+        <p style="margin-bottom:12px;color:var(--text-dim);font-size:0.88rem;">خوارزمية <strong>Deadlock Avoidance</strong> — تمنع الـ Deadlock قبل حدوثه بتحديد ما إذا كانت الحالة "آمنة" (Safe State) قبل منح الموارد.</p>
+
+        <div class="grid-2" style="margin-bottom:16px;">
+          <div class="highlight">
+            <strong>المفاهيم الأساسية:</strong>
+            <ul style="margin-top:6px;padding-right:16px;font-size:0.82rem;">
+              <li><strong>Max:</strong> أقصى ما تحتاجه العملية من كل نوع موارد</li>
+              <li><strong>Allocation:</strong> ما تمتلكه حالياً</li>
+              <li><strong>Need = Max − Allocation</strong></li>
+              <li><strong>Available:</strong> الموارد المتاحة في النظام</li>
+            </ul>
+          </div>
+          <div class="highlight success">
+            <strong>Safe State = Safe Sequence موجود</strong><br>
+            <span style="font-size:0.82rem;color:var(--text-dim);">إذا كان هناك ترتيب للعمليات بحيث كل عملية يمكن إنهاؤها باستخدام الموارد المتاحة + موارد العمليات التي أنهت قبلها → الحالة آمنة.</span>
+          </div>
+        </div>
+
+        <h4 style="color:var(--accent);font-size:0.9rem;margin-bottom:10px;">📝 مثال محلول — Banker's Algorithm</h4>
+        <p style="font-size:0.82rem;color:var(--text-dim);margin-bottom:10px;">3 أنواع موارد: A=10, B=5, C=7 &nbsp;|&nbsp; 5 عمليات</p>
+        <table class="process-table">
+          <tr>
+            <th>Process</th>
+            <th>Alloc (A,B,C)</th>
+            <th>Max (A,B,C)</th>
+            <th>Need (A,B,C)</th>
+          </tr>
+          <tr><td>P0</td><td>0,1,0</td><td>7,5,3</td><td style="color:#fbbf24;">7,4,3</td></tr>
+          <tr><td>P1</td><td>2,0,0</td><td>3,2,2</td><td style="color:#fbbf24;">1,2,2</td></tr>
+          <tr><td>P2</td><td>3,0,2</td><td>9,0,2</td><td style="color:#fbbf24;">6,0,0</td></tr>
+          <tr><td>P3</td><td>2,1,1</td><td>2,2,2</td><td style="color:#fbbf24;">0,1,1</td></tr>
+          <tr><td>P4</td><td>0,0,2</td><td>4,3,3</td><td style="color:#fbbf24;">4,3,1</td></tr>
+        </table>
+        <div class="highlight" style="margin-top:10px;font-size:0.82rem;">
+          <strong>Available = (10−7, 5−2, 7−5) = (3, 3, 2)</strong>
+        </div>
+        <ol class="steps" style="margin-top:12px;">
+          <li>Available=(3,3,2). P1 Need=(1,2,2) ≤ Available ✅ → أنجز P1. Available=(3,3,2)+(2,0,0)=<strong>(5,3,2)</strong></li>
+          <li>P3 Need=(0,1,1) ≤ (5,3,2) ✅ → أنجز P3. Available=(5,3,2)+(2,1,1)=<strong>(7,4,3)</strong></li>
+          <li>P4 Need=(4,3,1) ≤ (7,4,3) ✅ → أنجز P4. Available=(7,4,3)+(0,0,2)=<strong>(7,4,5)</strong></li>
+          <li>P0 Need=(7,4,3) ≤ (7,4,5) ✅ → أنجز P0. Available=(7,4,5)+(0,1,0)=<strong>(7,5,5)</strong></li>
+          <li>P2 Need=(6,0,0) ≤ (7,5,5) ✅ → أنجز P2.</li>
+        </ol>
+        <div class="formula">
+          Safe Sequence: <strong>P1 → P3 → P4 → P0 → P2</strong> ✅ الحالة آمنة!
+        </div>
+      </div>
+
+      <!-- SUMMARY: DEADLOCK -->
+      <div class="section-summary">
+        <div class="section-summary-title">⚡ ملخص سريع — الـ Deadlock</div>
+        <div class="sum-row">
+          <div class="sum-item"><span class="sum-label">🌟 أهم نقطة</span> الـ Deadlock يحتاج 4 شروط في آن واحد: Mutual Exclusion + Hold &amp; Wait + No Preemption + Circular Wait. كسر أي شرط = لا Deadlock.</div>
+          <div class="sum-item"><span class="sum-label">❓ أشهر سؤال</span> ما الفرق بين Prevention وAvoidance؟ — Prevention: نمنع أحد الشروط الأربعة مسبقاً. Avoidance: نسمح بالتشغيل ولكن نتحقق من Safe State قبل كل تخصيص (Banker's).</div>
+          <div class="sum-item"><span class="sum-label">🏦 Banker's</span> Need = Max − Allocation. إذا Need ≤ Available → آمن. Safe Sequence = الدليل على السلامة.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== SECTION: MEMORY ===== -->
+    <div class="section" id="memory">
+      <div class="section-title">💾 إدارة الذاكرة</div>
+      <div class="section-subtitle">Swapping، Address Binding، الـ MMU، وتقنيات التخصيص</div>
+
+      <div class="card">
+        <div class="card-header"><div class="card-icon">🧠</div><h3>لماذا نحتاج إدارة الذاكرة؟</h3></div>
+        <p>الـ RAM تتيح للـ CPU الوصول المباشر. هي Volatile (تُمحى عند إيقاف التشغيل). يجب تحميل الـ OS والبرامج فيها عند كل تشغيل.</p>
+        <div class="highlight">
+          <strong>الـ CPU يصل مباشرة لـ RAM فقط</strong> — كل شيء آخر (Disk) يجب نقله للـ RAM أولاً.
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header"><div class="card-icon">🔗</div><h3>Address Binding (ربط العناوين)</h3></div>
+        <p>ربط عناوين البرنامج المنطقية بعناوين فيزيائية حقيقية في الذاكرة.</p>
+        <div class="grid-3" style="margin-top:12px;">
+          <div style="background:var(--surface2);border-radius:8px;padding:14px;border:1px solid var(--border);">
+            <h4 style="color:#34d399;font-size:0.88rem;margin-bottom:8px;">1. Compile-Time</h4>
+            <p style="font-size:0.8rem;color:var(--text-dim);">العنوان يُحدَّد أثناء الترجمة. إذا تغير المكان → يجب إعادة الترجمة.</p>
+          </div>
+          <div style="background:var(--surface2);border-radius:8px;padding:14px;border:1px solid var(--border);">
+            <h4 style="color:#00d4ff;font-size:0.88rem;margin-bottom:8px;">2. Load-Time</h4>
+            <p style="font-size:0.8rem;color:var(--text-dim);">العنوان يُحدَّد عند التحميل في الذاكرة. Relocatable Code. يمكن تحميله في أي مكان.</p>
+          </div>
+          <div style="background:var(--surface2);border-radius:8px;padding:14px;border:1px solid var(--border);">
+            <h4 style="color:#a78bfa;font-size:0.88rem;margin-bottom:8px;">3. Execution-Time</h4>
+            <p style="font-size:0.8rem;color:var(--text-dim);">يحدث أثناء التشغيل. يحتاج دعم Hardware (MMU). الأكثر شيوعاً.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="grid-2">
+        <div class="card purple">
+          <div class="card-header"><div class="card-icon">🗺️</div><h3>Logical vs Physical Address</h3></div>
+          <div class="highlight">
+            <strong>Logical (Virtual) Address:</strong> ينشئها الـ CPU أثناء التشغيل. لا وجود فيزيائي لها.
+          </div>
+          <div class="highlight warning" style="margin-top:8px;">
+            <strong>Physical Address:</strong> العنوان الحقيقي في الـ RAM. المستخدم لا يتعامل معها مباشرة.
+          </div>
+          <p style="font-size:0.83rem;color:var(--text-dim);margin-top:8px;">الـ <strong>MMU</strong> (Memory Management Unit) يحوّل Logical → Physical</p>
+        </div>
+        <div class="card green">
+          <div class="card-header"><div class="card-icon">🔄</div><h3>Swapping</h3></div>
+          <p>نقل عملية من الـ RAM إلى Backing Store (Disk) مؤقتاً ثم إعادتها.</p>
+          <ul style="margin-top:8px;font-size:0.83rem;">
+            <li><strong>Roll out:</strong> إخراج عملية ذات أولوية منخفضة</li>
+            <li><strong>Roll in:</strong> إدخال عملية ذات أولوية أعلى</li>
+            <li>وقت النقل يتناسب مع حجم الذاكرة المنقولة</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header"><div class="card-icon">🏗️</div><h3>تقنيات تخصيص الذاكرة</h3></div>
+        <table class="comp-table">
+          <tr><th>النوع</th><th>الوصف</th><th>مميزات</th><th>عيوب</th></tr>
+          <tr>
+            <td><strong>Contiguous</strong></td>
+            <td>تخصيص كتلة متصلة واحدة</td>
+            <td style="color:#34d399;">بسيط وسريع الوصول</td>
+            <td style="color:#f87171;">Fragmentation</td>
+          </tr>
+          <tr>
+            <td><strong>Non-Contiguous</strong></td>
+            <td>كتل غير متصلة</td>
+            <td style="color:#34d399;">لا External Fragmentation</td>
+            <td style="color:#f87171;">يحتاج Page Table</td>
+          </tr>
+        </table>
+      </div>
+
+      <div class="card amber">
+        <div class="card-header"><div class="card-icon">🧩</div><h3>Fragmentation (التجزئة)</h3></div>
+        <div class="grid-2">
+          <div>
+            <h4 style="color:#f87171;font-size:0.9rem;margin-bottom:8px;">Internal Fragmentation</h4>
+            <p style="font-size:0.83rem;color:var(--text-dim);">الذاكرة المخصصة أكبر من المطلوب. المساحة الزائدة داخل الـ Partition لا تُستخدم.</p>
+            <div class="formula" style="font-size:0.8rem;">مثال: Partition=4MB, Process=1MB → داخلي = 3MB</div>
+          </div>
+          <div>
+            <h4 style="color:#fbbf24;font-size:0.9rem;margin-bottom:8px;">External Fragmentation</h4>
+            <p style="font-size:0.83rem;color:var(--text-dim);">مساحات حرة موجودة لكنها غير متصلة، لا يمكن استخدامها لعملية كبيرة.</p>
+            <div class="formula" style="font-size:0.8rem;">P5=7MB لكن 7MB متفرقة → لا يمكن تخصيصها!</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header"><div class="card-icon">📐</div><h3>خوارزميات التخصيص: First-Fit / Best-Fit / Worst-Fit</h3></div>
+        <table class="comp-table">
+          <tr><th>الخوارزمية</th><th>الوصف</th><th>الخاصية</th></tr>
+          <tr>
+            <td><strong>First Fit</strong></td>
+            <td>أول فراغ كافٍ من البداية</td>
+            <td>أسرع — يتوقف عند أول match</td>
+          </tr>
+          <tr>
+            <td><strong>Best Fit</strong></td>
+            <td>أصغر فراغ يتسع للعملية</td>
+            <td>أقل هدراً — يبحث في كل القائمة</td>
+          </tr>
+          <tr>
+            <td><strong>Worst Fit</strong></td>
+            <td>أكبر فراغ متاح</td>
+            <td>يترك أكبر بقية — يبحث في كل القائمة</td>
+          </tr>
+        </table>
+
+        <h4 style="margin:16px 0 8px;font-size:0.9rem;color:var(--accent)">📝 مثال على الفرق:</h4>
+        <p style="font-size:0.83rem;color:var(--text-dim);margin-bottom:8px;">الفراغات المتاحة: 100K, 500K, 200K, 300K, 600K — عملية 212K</p>
+        <div class="grid-3">
+          <div class="highlight"><strong>First Fit:</strong><br>أول فراغ ≥ 212K → 500K<br>يبقى 288K</div>
+          <div class="highlight success"><strong>Best Fit:</strong><br>أصغر ≥ 212K → 300K<br>يبقى 88K فقط</div>
+          <div class="highlight warning"><strong>Worst Fit:</strong><br>أكبر → 600K<br>يبقى 388K كبقية</div>
+        </div>
+      </div>
+
+      <!-- PAGE REPLACEMENT ALGORITHMS -->
+      <div class="card red">
+        <div class="card-header"><div class="card-icon">🔁</div><h3>خوارزميات إحلال الصفحات (Page Replacement)</h3></div>
+        <p style="margin-bottom:12px;color:var(--text-dim);font-size:0.88rem;">عندما تكون الذاكرة ممتلئة ونحتاج تحميل صفحة جديدة، نُحدد أي صفحة نُخرج (Victim Page). الهدف: تقليل عدد الـ <strong>Page Faults</strong>.</p>
+
+        <div class="grid-3" style="margin-bottom:16px;">
+          <div style="background:var(--surface2);border-radius:8px;padding:14px;border:1px solid rgba(239,68,68,0.2);">
+            <h4 style="color:#f87171;font-size:0.88rem;margin-bottom:8px;">1️⃣ FIFO</h4>
+            <p style="font-size:0.8rem;color:var(--text-dim);">أول صفحة دخلت → أول صفحة تخرج. بسيط لكن ليس الأمثل. قد يعاني من <strong>Belady's Anomaly</strong> (زيادة الـ Frames تزيد Page Faults!).</p>
+          </div>
+          <div style="background:var(--surface2);border-radius:8px;padding:14px;border:1px solid rgba(0,212,255,0.2);">
+            <h4 style="color:#00d4ff;font-size:0.88rem;margin-bottom:8px;">2️⃣ LRU</h4>
+            <p style="font-size:0.8rem;color:var(--text-dim);">Least Recently Used — أقل صفحة استُخدمت مؤخراً تخرج. يعتمد على سجل الاستخدام. لا يعاني من Belady's Anomaly. عملي وشائع.</p>
+          </div>
+          <div style="background:var(--surface2);border-radius:8px;padding:14px;border:1px solid rgba(16,185,129,0.2);">
+            <h4 style="color:#34d399;font-size:0.88rem;margin-bottom:8px;">3️⃣ Optimal</h4>
+            <p style="font-size:0.8rem;color:var(--text-dim);">تخرج الصفحة التي لن تُستخدم لأطول وقت في المستقبل. أقل عدد Page Faults ممكن. نظري فقط — غير قابل للتطبيق.</p>
+          </div>
+        </div>
+
+        <h4 style="color:var(--accent);font-size:0.9rem;margin-bottom:10px;">📝 مثال مقارن — 3 Frames، Reference String: 7,0,1,2,0,3,0,4,2,3,0,3,2</h4>
+
+        <div style="overflow-x:auto;">
+          <table class="process-table" style="min-width:600px;">
+            <tr>
+              <th>الخوارزمية</th>
+              <th>عدد Page Faults</th>
+              <th>الصفحة المُستبدَلة عند 2,3,4 (مثال)</th>
+            </tr>
+            <tr>
+              <td><strong style="color:#f87171;">FIFO</strong></td>
+              <td style="color:#f87171;font-weight:700;">9 ❌ (الأسوأ)</td>
+              <td>أول صفحة دخلت (بغض النظر عن الاستخدام)</td>
+            </tr>
+            <tr>
+              <td><strong style="color:#00d4ff;">LRU</strong></td>
+              <td style="color:#fbbf24;font-weight:700;">8 ⚠️ (جيد)</td>
+              <td>الصفحة التي لم تُستخدم لأطول وقت</td>
+            </tr>
+            <tr>
+              <td><strong style="color:#34d399;">Optimal</strong></td>
+              <td style="color:#34d399;font-weight:700;">5 ✅ (الأمثل)</td>
+              <td>الصفحة التي لن تُستخدم لأطول وقت مستقبلاً</td>
+            </tr>
+          </table>
+        </div>
+
+        <div class="highlight warning" style="margin-top:12px;font-size:0.83rem;">
+          <strong>⚠️ Belady's Anomaly:</strong> في FIFO فقط — زيادة عدد الـ Frames أحياناً تزيد Page Faults! LRU وOptimal لا يعانيان من هذه المشكلة.
+        </div>
+        <div class="formula" style="margin-top:10px;">
+          Page Fault Rate ↓ = أداء أفضل &nbsp;|&nbsp; Optimal = المرجع للمقارنة &nbsp;|&nbsp; LRU = الأفضل عملياً
+        </div>
+      </div>
+
+      <!-- SUMMARY: MEMORY -->
+      <div class="section-summary">
+        <div class="section-summary-title">⚡ ملخص سريع — إدارة الذاكرة</div>
+        <div class="sum-row">
+          <div class="sum-item"><span class="sum-label">🌟 أهم نقطة</span> الـ CPU يصل مباشرة للـ RAM فقط. الـ MMU يحوّل Logical Address → Physical Address. الـ Swapping ينقل عمليات بين RAM وDisk.</div>
+          <div class="sum-item"><span class="sum-label">❓ أشهر سؤال</span> ما الفرق بين Internal وExternal Fragmentation؟ — Internal: مساحة ضائعة داخل الـ Partition المخصص. External: مساحات حرة موجودة لكنها مفككة ولا يمكن استخدامها.</div>
+          <div class="sum-item"><span class="sum-label">🔁 Page Replacement</span> Optimal = الأقل فaults لكن نظري. LRU = الأفضل عملياً. FIFO = الأبسط لكن يعاني Belady's Anomaly.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== SECTION: PAGING ===== -->
+    <div class="section" id="paging">
+      <div class="section-title">📄 Paging & Segmentation</div>
+      <div class="section-subtitle">التخصيص غير المتصل — ترجمة العناوين المنطقية للفيزيائية</div>
+
+      <div class="card">
+        <div class="card-header"><div class="card-icon">📄</div><h3>Paging (التصفيح)</h3></div>
+        <p>تقسيم الذاكرة المادية إلى <strong>Frames</strong> متساوية، والذاكرة المنطقية إلى <strong>Pages</strong> بنفس الحجم.</p>
+        <div class="grid-2" style="margin-top:12px;">
+          <div class="highlight">
+            <strong>Page Size = Frame Size = 2ⁿ</strong><br>
+            مثال: n=2 → Size=4 → عناوين 00, 01, 10, 11
+          </div>
+          <div class="highlight success">
+            ✅ <strong>لا External Fragmentation</strong><br>
+            ⚠️ قد يوجد Internal Fragmentation
+          </div>
+        </div>
+      </div>
+
+      <div class="card purple">
+        <div class="card-header"><div class="card-icon">🗺️</div><h3>ترجمة العناوين في Paging</h3></div>
+        <div class="grid-2">
+          <div>
+            <h4 style="color:var(--accent);font-size:0.9rem;margin-bottom:8px;">Logical Address</h4>
+            <div class="formula">= Page Number + Page Offset</div>
+            <ul style="font-size:0.83rem;margin-top:8px;">
+              <li><strong>Page Number:</strong> رقم الصفحة</li>
+              <li><strong>Page Offset:</strong> الموضع داخل الصفحة</li>
+            </ul>
+          </div>
+          <div>
+            <h4 style="color:var(--accent2);font-size:0.9rem;margin-bottom:8px;">Physical Address</h4>
+            <div class="formula">= Frame Number + Page Offset</div>
+            <ul style="font-size:0.83rem;margin-top:8px;">
+              <li><strong>Frame Number:</strong> من الـ Page Table</li>
+              <li><strong>Page Offset:</strong> نفس الـ Logical Offset</li>
+            </ul>
+          </div>
+        </div>
+        <div class="highlight" style="margin-top:12px;">
+          <strong>الـ PTBR (Page Table Base Register):</strong> يحتوي على عنوان بداية الـ Page Table في الذاكرة.
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header"><div class="card-icon">📐</div><h3>📝 مثال محلول — ترجمة عنوان Paging</h3></div>
+        <div class="highlight">
+          <strong>البيانات:</strong> Process P=195 bytes، Page Size=64 bytes<br>
+          Page Table: Page 0→Frame 1, Page 1→Frame 3, Page 2→Frame 4, Page 3→Frame 2
+        </div>
+        <ol class="steps">
+          <li>حساب عدد الصفحات: 195/64 = 3.05 → يحتاج <strong>4 pages</strong></li>
+          <li>Logical Address مثلاً: 100<br>Page Number = 100 ÷ 64 = <strong>1</strong> (الصفحة 1)<br>Page Offset = 100 mod 64 = <strong>36</strong></li>
+          <li>من الـ Page Table: Page 1 → <strong>Frame 3</strong></li>
+          <li>Physical Address = Frame 3 × 64 + 36 = 192 + 36 = <strong>228</strong></li>
+        </ol>
+        <div class="formula">
+          Physical = (Frame Number × Page Size) + Page Offset<br>
+          = (3 × 64) + 36 = 228
+        </div>
+      </div>
+
+      <div class="card green">
+        <div class="card-header"><div class="card-icon">🗂️</div><h3>Segmentation (التقطيع)</h3></div>
+        <p>تقسيم العملية إلى <strong>Segments</strong> (كتل غير متساوية) تمثّل الوحدات المنطقية: code, data, stack.</p>
+        <div class="grid-2" style="margin-top:12px;">
+          <div class="highlight">
+            <strong>Segment Table يحتوي لكل Segment:</strong>
+            <ul style="margin-top:6px;padding-right:16px;">
+              <li><strong>Base:</strong> عنوان البداية في الذاكرة</li>
+              <li><strong>Limit:</strong> طول الـ Segment</li>
+            </ul>
+          </div>
+          <div>
+            <div class="formula">
+              Logical Address = (Segment#, Offset)<br>
+              Physical = Base[Segment#] + Offset<br>
+              يجب أن Offset &lt; Limit
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card amber">
+        <div class="card-header"><div class="card-icon">🔀</div><h3>Paging + Segmentation (Hybrid)</h3></div>
+        <p>يجمع الأفضلين: كل Segment يحتوي على Pages. مستويين من الـ Mapping.</p>
+        <ul style="margin-top:8px;">
+          <li>Segments تمثّل الوحدات المنطقية (code, data, stack)</li>
+          <li>Pages تُستخدم من جهة الـ OS لسهولة إدارة الذاكرة</li>
+          <li>لكل Segment: Base + Bound + Page Table خاصة</li>
+        </ul>
+        <div class="highlight success" style="margin-top:8px;">
+          ✅ يتجنب External Fragmentation (من Paging) + يُعطي رؤية منطقية للمستخدم (من Segmentation)
+        </div>
+      </div>
+
+      <!-- SUMMARY: PAGING -->
+      <div class="section-summary">
+        <div class="section-summary-title">⚡ ملخص سريع — Paging &amp; Segmentation</div>
+        <div class="sum-row">
+          <div class="sum-item"><span class="sum-label">🌟 أهم نقطة</span> Paging يقضي على External Fragmentation لكن يبقى Internal. المعادلة الأساسية: Physical = (Frame# × Page Size) + Offset.</div>
+          <div class="sum-item"><span class="sum-label">❓ أشهر سؤال</span> ما الفرق بين Paging وSegmentation؟ — Paging: أحجام متساوية (Pages/Frames)، يديره OS. Segmentation: أحجام متغيرة تعكس بنية البرنامج (code, data, stack)، يديره المبرمج.</div>
+          <div class="sum-item"><span class="sum-label">🔢 المعادلة</span> Page Number = LA ÷ Page Size &nbsp;|&nbsp; Offset = LA mod Page Size &nbsp;|&nbsp; PA = Frame# × Page Size + Offset</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== SECTION: EXAMPLES ===== -->
+    <div class="section" id="examples">
+      <div class="section-title">📝 أسئلة الامتحان — محلولة بالتفصيل</div>
+      <div class="section-subtitle">أسئلة امتحان حقيقية مع الحل الكامل خطوة بخطوة</div>
+
+      <!-- MCQ -->
+      <div class="algo-card">
+        <div class="algo-header">
+          <h3>📘 أسئلة اختيار من متعدد — MCQ (السؤال الأول)</h3>
+          <span class="tag tag-blue">Multiple Choice</span>
+        </div>
+        <div class="algo-body">
+          <table class="process-table">
+            <tr><th>رقم</th><th>السؤال</th><th>الإجابة الصحيحة</th><th>السبب</th></tr>
+            <tr>
+              <td><strong>21</strong></td>
+              <td>It prevents conflicts between multiple programs</td>
+              <td style="color:#34d399;font-weight:700;">c) Kernel</td>
+              <td>الـ Kernel هو المسؤول عن منع تعارض البرامج المتعددة وإدارة الموارد المشتركة</td>
+            </tr>
+            <tr>
+              <td><strong>22</strong></td>
+              <td>It is a component of the OS responsible for the actual transfer of control from the scheduler to the selected process</td>
+              <td style="color:#34d399;font-weight:700;">a) The dispatcher</td>
+              <td>الـ Dispatcher هو المسؤول فعلياً عن نقل التحكم للعملية المختارة (Context Switch + إعطاء CPU)</td>
+            </tr>
+            <tr>
+              <td><strong>23</strong></td>
+              <td>In batch processing systems, users submitted jobs using:</td>
+              <td style="color:#34d399;font-weight:700;">a) Punched cards</td>
+              <td>أنظمة الـ Batch القديمة كانت تستقبل المهام عبر Punch Cards (بطاقات مثقبة)</td>
+            </tr>
+            <tr>
+              <td><strong>24</strong></td>
+              <td>In priority algorithm, if two processes have the same priority, the process is:</td>
+              <td style="color:#34d399;font-weight:700;">a) Come first</td>
+              <td>عند تساوي الأولوية، يُطبّق FCFS — أول من وصل أول من يُخدَم</td>
+            </tr>
+            <tr>
+              <td><strong>25</strong></td>
+              <td>Once a process starts executing, it cannot be interrupted until it finishes or voluntarily releases the CPU</td>
+              <td style="color:#34d399;font-weight:700;">a) Non-Preemptive scheduling</td>
+              <td>الـ Non-Preemptive = لا مقاطعة — العملية تكمل أو تتخلى بنفسها عن الـ CPU</td>
+            </tr>
+          </table>
+        </div>
+      </div>
+
+      <!-- Question 2: Threads + Multiprocessor -->
+      <div class="algo-card">
+        <div class="algo-header">
+          <h3>📗 السؤال الثاني — Threads & Multiprocessor OS (35 درجة)</h3>
+          <span class="tag tag-purple">Threads + Multiprocessor</span>
+        </div>
+        <div class="algo-body">
+          <p style="color:var(--text-dim);font-size:0.88rem;margin-bottom:16px;">
+            الشكل (a) يوضح أنواع الخيوط ومحتوياتها، والشكل (b) يوضح نظام Multiprocessor. أكمل الأرقام من 1 إلى 17:
+          </p>
+
+          <!-- Diagram description -->
+          <div class="highlight" style="margin-bottom:16px;">
+            <strong>الشكل (a) — Single-Threaded vs Multi-Threaded Process:</strong><br>
+            العملية الواحدة تحتوي على: Code, Data, Files (مشتركة بين الخيوط) + PC, Stack, Registers (خاص بكل خيط).
+          </div>
+
+          <table class="process-table">
+            <tr><th>Q. No</th><th>الإجابة</th><th>الشرح</th></tr>
+            <tr><td><strong>1</strong></td><td style="color:#00d4ff;">Thread (خيط)</td><td>الوحدة المستقلة داخل العملية التي لها PC وStack خاص</td></tr>
+            <tr><td><strong>2</strong></td><td style="color:#00d4ff;">data</td><td>قسم البيانات المشترك بين الخيوط داخل العملية</td></tr>
+            <tr><td><strong>3</strong></td><td style="color:#00d4ff;">stack</td><td>كل خيط له Stack خاص لنداءات الدوال والمتغيرات المحلية</td></tr>
+            <tr><td><strong>4</strong></td><td style="color:#00d4ff;">registers</td><td>سجلات الـ CPU الخاصة بكل خيط تُحفظ عند Context Switch</td></tr>
+            <tr><td><strong>5</strong></td><td style="color:#00d4ff;">PC (Program Counter)</td><td>يحفظ عنوان التعليمة التالية لكل خيط بشكل مستقل</td></tr>
+            <tr><td><strong>6</strong></td><td style="color:#00d4ff;">registers</td><td>السجلات — خاصة بكل خيط</td></tr>
+            <tr><td><strong>7</strong></td><td style="color:#00d4ff;">PC</td><td>Program Counter — خاص بكل خيط</td></tr>
+            <tr><td><strong>8</strong></td><td style="color:#00d4ff;">stack</td><td>Stack — خاص بكل خيط</td></tr>
+            <tr><td><strong>9</strong></td><td style="color:#00d4ff;">PC</td><td>Program Counter للخيط الثالث</td></tr>
+            <tr><td><strong>10</strong></td><td style="color:#00d4ff;">stack</td><td>Stack للخيط الثالث</td></tr>
+            <tr><td><strong>11</strong></td><td style="color:#00d4ff;">code</td><td>قسم الكود — مشترك بين جميع الخيوط</td></tr>
+            <tr><td><strong>12</strong></td><td style="color:#00d4ff;">files</td><td>الملفات المفتوحة — مشتركة بين الخيوط</td></tr>
+            <tr><td><strong>13</strong></td><td style="color:#00d4ff;">Single-Threaded Process</td><td>العملية ذات الخيط الواحد — فيها PC وStack واحد فقط</td></tr>
+          </table>
+
+          <div class="highlight" style="margin:16px 0 8px;">
+            <strong>الشكل (b) — Multiprocessor OS (SMP):</strong>
+          </div>
+
+          <table class="process-table">
+            <tr><th>Q. No</th><th>الإجابة</th><th>الشرح</th></tr>
+            <tr><td><strong>14</strong></td><td style="color:#fbbf24;">Operating System</td><td>نظام التشغيل الذي يدير توزيع المهام على المعالجات</td></tr>
+            <tr><td><strong>15</strong></td><td style="color:#fbbf24;">job1 (المهمة الأولى)</td><td>المهمة الأولى التي يُرسلها الـ OS للتنفيذ</td></tr>
+            <tr><td><strong>16</strong></td><td style="color:#fbbf24;">CPU1</td><td>المعالج الأول ينفّذ job1 بشكل مستقل</td></tr>
+            <tr><td><strong>17</strong></td><td style="color:#fbbf24;">job13</td><td>مهمة أخرى تُنفَّذ بالتوازي على CPU2 في نفس الوقت</td></tr>
+          </table>
+
+          <div class="formula" style="margin-top:12px;">
+            المشترك بين الخيوط: Code + Data + Files<br>
+            الخاص بكل خيط: PC + Registers + Stack<br>
+            Multiprocessor = عدة CPUs تعمل في نفس الوقت على مهام مختلفة ✅
+          </div>
+        </div>
+      </div>
+
+      <!-- Question 3: Multi-level Scheduling -->
+      <div class="algo-card">
+        <div class="algo-header">
+          <h3>📙 السؤال الثالث — Multi-level Scheduling: RR → SJF → FCFS</h3>
+          <span class="tag tag-green">Scheduling</span>
+        </div>
+        <div class="algo-body">
+          <div class="highlight">
+            <strong>البيانات:</strong> P1=11ms، P2=5ms، P3=7ms — يصلوا بنفس الترتيب (AT=0 للكل)<br>
+            المستوى الأول: Round Robin (q=7ms)<br>
+            المستوى الثاني: SJF<br>
+            المستوى الثالث: FCFS
+          </div>
+
+          <!-- Level 1: RR -->
+          <h4 style="color:var(--accent);font-size:0.95rem;margin:16px 0 8px;">🔵 المستوى الأول: Round Robin (q=7)</h4>
+          <ol class="steps">
+            <li>t=0→7: P1 ينفّذ 7ms (متبقي 4ms). P1 يخرج من هذا المستوى ويكمل في المستوى التاني.</li>
+            <li>t=7→12: P2 ينفّذ 5ms كاملة (انتهى! ✅ P2 ينتقل للمستوى الثالث)</li>
+            <li>t=12→19: P3 ينفّذ 7ms كاملة (انتهى! ✅ P3 ينتقل للمستوى الثالث)</li>
+          </ol>
+          <div class="highlight warning" style="font-size:0.83rem;">
+            ⚠️ P2 وP3 أنهوا في المستوى الأول. P1 لم يكمل → ينزل للمستوى الثاني (SJF) بـ remaining=4ms
+          </div>
+
+          <div class="gantt" style="margin-top:12px;">
+            <div class="gantt-block"><div class="gantt-bar g-p1" style="width:70px;">P1 (7ms)</div><span class="gantt-time">0</span></div>
+            <div class="gantt-block"><div class="gantt-bar g-p2" style="width:50px;">P2 (5ms)</div><span class="gantt-time">7</span></div>
+            <div class="gantt-block"><div class="gantt-bar g-p3" style="width:70px;">P3 (7ms)</div><span class="gantt-time">12</span></div>
+            <span style="margin-right:6px;font-size:0.8rem;color:var(--text-dim);align-self:flex-end;padding-bottom:30px;">19</span>
+          </div>
+
+          <!-- Level 2: SJF -->
+          <h4 style="color:var(--accent2);font-size:0.95rem;margin:16px 0 8px;">🟣 المستوى الثاني: SJF (P1 remaining=4ms فقط)</h4>
+          <ol class="steps">
+            <li>t=19→23: P1 ينفّذ الـ 4ms المتبقية وينتهي ✅ (CT=23)</li>
+          </ol>
+          <div class="gantt" style="margin-top:8px;">
+            <div class="gantt-block"><div class="gantt-bar g-p1" style="width:40px;">P1 (4ms)</div><span class="gantt-time">19</span></div>
+            <span style="margin-right:6px;font-size:0.8rem;color:var(--text-dim);align-self:flex-end;padding-bottom:30px;">23</span>
+          </div>
+
+          <!-- Full Gantt -->
+          <h4 style="color:var(--accent3);font-size:0.95rem;margin:16px 0 8px;">📊 Gantt Chart الكامل:</h4>
+          <div class="gantt">
+            <div class="gantt-block"><div class="gantt-bar g-p1" style="width:70px;font-size:0.78rem;">P1 (RR)</div><span class="gantt-time">0</span></div>
+            <div class="gantt-block"><div class="gantt-bar g-p2" style="width:50px;font-size:0.78rem;">P2 (RR)</div><span class="gantt-time">7</span></div>
+            <div class="gantt-block"><div class="gantt-bar g-p3" style="width:70px;font-size:0.78rem;">P3 (RR)</div><span class="gantt-time">12</span></div>
+            <div class="gantt-block"><div class="gantt-bar g-p1" style="width:40px;font-size:0.78rem;">P1 (SJF)</div><span class="gantt-time">19</span></div>
+            <span style="margin-right:6px;font-size:0.8rem;color:var(--text-dim);align-self:flex-end;padding-bottom:30px;">23</span>
+          </div>
+
+          <!-- Results Table -->
+          <h4 style="color:var(--accent);font-size:0.95rem;margin:16px 0 8px;">📋 جدول TAT و WT:</h4>
+          <table class="process-table">
+            <tr><th>Process</th><th>BT</th><th>CT</th><th>TAT = CT − AT</th><th>WT = TAT − BT</th></tr>
+            <tr><td>P1</td><td>11</td><td style="color:#a78bfa;">23</td><td style="color:#34d399;">23 − 0 = <strong>23</strong></td><td style="color:#00d4ff;">23 − 11 = <strong>12</strong></td></tr>
+            <tr><td>P2</td><td>5</td><td style="color:#a78bfa;">12</td><td style="color:#34d399;">12 − 0 = <strong>12</strong></td><td style="color:#00d4ff;">12 − 5 = <strong>7</strong></td></tr>
+            <tr><td>P3</td><td>7</td><td style="color:#a78bfa;">19</td><td style="color:#34d399;">19 − 0 = <strong>19</strong></td><td style="color:#00d4ff;">19 − 7 = <strong>12</strong></td></tr>
+          </table>
+
+          <div class="formula" style="margin-top:12px;">
+            AWT (Multi-level) = (12 + 7 + 12) / 3 = <strong>10.33 ms</strong><br>
+            ATAT = (23 + 12 + 19) / 3 = <strong>18 ms</strong>
+          </div>
+
+          <!-- Compare FCFS -->
+          <h4 style="color:var(--accent4);font-size:0.95rem;margin:16px 0 8px;">⚖️ المقارنة مع FCFS (P1→P2→P3):</h4>
+          <table class="process-table">
+            <tr><th>Process</th><th>BT</th><th>CT</th><th>TAT</th><th>WT</th></tr>
+            <tr><td>P1</td><td>11</td><td>11</td><td style="color:#34d399;">11</td><td style="color:#00d4ff;">0</td></tr>
+            <tr><td>P2</td><td>5</td><td>16</td><td style="color:#34d399;">16</td><td style="color:#00d4ff;">11</td></tr>
+            <tr><td>P3</td><td>7</td><td>23</td><td style="color:#34d399;">23</td><td style="color:#00d4ff;">16</td></tr>
+          </table>
+          <div class="formula">AWT (FCFS) = (0 + 11 + 16) / 3 = <strong>9 ms</strong></div>
+
+          <!-- Compare SJF -->
+          <h4 style="color:var(--accent3);font-size:0.95rem;margin:16px 0 8px;">⚖️ المقارنة مع SJF (P2→P3→P1):</h4>
+          <table class="process-table">
+            <tr><th>Process</th><th>BT</th><th>CT</th><th>TAT</th><th>WT</th></tr>
+            <tr><td>P2</td><td>5</td><td>5</td><td style="color:#34d399;">5</td><td style="color:#00d4ff;">0</td></tr>
+            <tr><td>P3</td><td>7</td><td>12</td><td style="color:#34d399;">12</td><td style="color:#00d4ff;">5</td></tr>
+            <tr><td>P1</td><td>11</td><td>23</td><td style="color:#34d399;">23</td><td style="color:#00d4ff;">12</td></tr>
+          </table>
+          <div class="formula">AWT (SJF) = (0 + 5 + 12) / 3 = <strong>5.67 ms</strong></div>
+
+          <div class="highlight success" style="margin-top:12px;">
+            🏆 <strong>الأفضل = SJF</strong> بـ AWT = 5.67ms (أقل من FCFS=9ms ومن Multi-level=10.33ms)<br>
+            SJF يعطي أقل Average Waiting Time نظرياً لأنه ينفّذ الأقصر أولاً.
+          </div>
+        </div>
+      </div>
+
+      <!-- Question 4: Memory Fragmentation -->
+      <div class="algo-card">
+        <div class="algo-header">
+          <h3>📕 السؤال الرابع — Memory Fragmentation: Fixed & Dynamic (23 درجة)</h3>
+          <span class="tag tag-red">Memory Management</span>
+        </div>
+        <div class="algo-body">
+
+          <!-- Part A: Fixed Size -->
+          <h4 style="color:var(--accent);font-size:0.95rem;margin-bottom:12px;">📦 الجزء (a) — Fixed Size Partition:</h4>
+          <div class="highlight">
+            <strong>الـ Partitions:</strong> (1) = 5MB &nbsp;|&nbsp; (2) = 17MB &nbsp;|&nbsp; (3) = 9MB &nbsp;|&nbsp; (4) = 27MB<br>
+            <strong>العمليات:</strong> P1=1MB &nbsp;|&nbsp; P2=7MB &nbsp;|&nbsp; P3=7MB &nbsp;|&nbsp; P4=14MB
+          </div>
+
+          <p style="font-size:0.85rem;color:var(--text-dim);margin:10px 0 6px;">توزيع العمليات على الـ Partitions (First Fit):</p>
+          <table class="process-table">
+            <tr><th>Partition</th><th>Block Size</th><th>العملية</th><th>حجم العملية</th><th>Internal Frag</th></tr>
+            <tr><td>(1)</td><td>5 MB</td><td>P1</td><td>1 MB</td><td style="color:#f87171;font-weight:700;">5 − 1 = <strong>4 MB</strong></td></tr>
+            <tr><td>(2)</td><td>17 MB</td><td>P2</td><td>7 MB</td><td style="color:#f87171;font-weight:700;">17 − 7 = <strong>10 MB</strong></td></tr>
+            <tr><td>(3)</td><td>9 MB</td><td>P3</td><td>7 MB</td><td style="color:#f87171;font-weight:700;">9 − 7 = <strong>2 MB</strong></td></tr>
+            <tr><td>(4)</td><td>27 MB</td><td>P4</td><td>14 MB</td><td style="color:#f87171;font-weight:700;">27 − 14 = <strong>13 MB</strong></td></tr>
+          </table>
+
+          <div class="formula" style="margin-top:10px;">
+            <strong>الإجابة (10) — نوع التخصيص:</strong> Fixed Size Partition (Contiguous Allocation)<br>
+            <strong>الإجابة (11) — Total Internal Fragmentation (a):</strong> 4 + 10 + 2 + 13 = <strong>29 MB</strong>
+          </div>
+
+          <div class="highlight warning" style="margin-top:10px;font-size:0.83rem;">
+            <strong>External Fragmentation في Fixed Partition:</strong> لا يوجد — كل عملية في Partition محدد، لا توجد فراغات حرة خارج الـ Partitions.
+          </div>
+          <div class="formula">
+            <strong>الإجابة (12) — Total External Fragmentation (a):</strong> <strong>0 MB</strong>
+          </div>
+
+          <!-- Part B: Dynamic -->
+          <h4 style="color:var(--accent3);font-size:0.95rem;margin:20px 0 12px;">📦 الجزء (b) — Dynamic Partitioning:</h4>
+          <div class="highlight">
+            <strong>الـ Blocks المتاحة:</strong> Block=5MB &nbsp;|&nbsp; Block=7MB &nbsp;|&nbsp; Block=1MB &nbsp;|&nbsp; Block=5MB<br>
+            <strong>العمليات:</strong> P1=2MB &nbsp;|&nbsp; P2=6MB &nbsp;|&nbsp; P3=1MB &nbsp;|&nbsp; P4=7MB
+          </div>
+
+          <table class="process-table">
+            <tr><th>Block</th><th>Block Size</th><th>العملية</th><th>حجم العملية</th><th>Internal Frag</th><th>ملاحظة</th></tr>
+            <tr><td>B1</td><td>5 MB</td><td>P1</td><td>2 MB</td><td style="color:#f87171;">5 − 2 = <strong>3 MB</strong></td><td>Dynamic → لا Internal Frag!</td></tr>
+            <tr><td>B2</td><td>7 MB</td><td>P2</td><td>6 MB</td><td style="color:#f87171;">7 − 6 = <strong>1 MB</strong></td><td>Dynamic → لا Internal Frag!</td></tr>
+            <tr><td>B3</td><td>1 MB</td><td>P3</td><td>1 MB</td><td style="color:#34d399;">0 MB</td><td>مطابق تماماً ✅</td></tr>
+            <tr><td>B4</td><td>5 MB</td><td>P4=7MB</td><td>7 MB</td><td>—</td><td style="color:#f87171;">❌ لا يتسع! P4 أكبر من B4</td></tr>
+          </table>
+
+          <div class="highlight danger" style="margin-top:10px;font-size:0.83rem;">
+            <strong>في Dynamic Partitioning:</strong> Internal Fragmentation = 0 (الـ Partition يُخصَّص بحجم العملية بالضبط).<br>
+            لكن P4=7MB لا يجد Block كافياً → الـ 3MB الزائدة من B1 + الـ 1MB من B2 = 4MB متفرقة → <strong>External Fragmentation!</strong>
+          </div>
+
+          <div class="formula">
+            <strong>الإجابة (11) — Total Internal Fragmentation (b):</strong> <strong>0 MB</strong> (Dynamic = لا Internal Frag)<br>
+            <strong>الإجابة (13) — Total External Fragmentation (b):</strong> 3 + 1 = <strong>4 MB</strong> (الفراغات المتبقية المتفرقة)
+          </div>
+
+          <!-- Summary Table for Q4 -->
+          <h4 style="color:var(--accent);font-size:0.9rem;margin:16px 0 8px;">📋 ملخص إجابات السؤال الرابع:</h4>
+          <table class="process-table">
+            <tr><th>الرقم</th><th>السؤال</th><th>الإجابة</th></tr>
+            <tr><td><strong>(9)</strong></td><td>These types of memory allocation</td><td style="color:#00d4ff;font-weight:700;">Contiguous + Non-Contiguous (Fixed & Dynamic)</td></tr>
+            <tr><td><strong>(10)</strong></td><td>نوع التخصيص في الجزء (a)</td><td style="color:#00d4ff;font-weight:700;">Fixed Size Partition (Contiguous)</td></tr>
+            <tr><td><strong>(11)</strong></td><td>Total Internal Fragmentation — (a)</td><td style="color:#34d399;font-weight:700;">29 MB</td></tr>
+            <tr><td><strong>(11)</strong></td><td>Total Internal Fragmentation — (b)</td><td style="color:#34d399;font-weight:700;">0 MB</td></tr>
+            <tr><td><strong>(12)</strong></td><td>Total External Fragmentation — (a)</td><td style="color:#34d399;font-weight:700;">0 MB</td></tr>
+            <tr><td><strong>(13)</strong></td><td>Total External Fragmentation — (b)</td><td style="color:#34d399;font-weight:700;">4 MB</td></tr>
+          </table>
+
+          <div class="formula" style="margin-top:12px;">
+            Fixed Partition → Internal Frag عالية + External Frag = 0<br>
+            Dynamic Partition → Internal Frag = 0 + External Frag ممكنة ✅
+          </div>
+        </div>
+      </div>
+
+    </div><!-- end examples section -->
+
+  </div><!-- end content -->
+</main>
+
+<script>
+  // Navigation
+  function showSection(id) {
+    document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+    document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+    document.getElementById(id).classList.add('active');
+    event.currentTarget.classList.add('active');
+
+    // Close sidebar on mobile
+    if (window.innerWidth < 900) {
+      document.getElementById('sidebar').classList.remove('open');
+    }
+
+    // Update progress
+    updateProgress();
+    window.scrollTo(0, 0);
+  }
+
+  function toggleSidebar() {
+    document.getElementById('sidebar').classList.toggle('open');
+  }
+
+  // Progress bar on scroll
+  function updateProgress() {
+    const scrollTop = window.scrollY;
+    const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+    const progress = docHeight > 0 ? (scrollTop / docHeight) * 100 : 0;
+    document.getElementById('progressBar').style.width = progress + '%';
+  }
+
+  window.addEventListener('scroll', updateProgress);
+
+  // Close sidebar when clicking outside
+  document.addEventListener('click', function(e) {
+    const sidebar = document.getElementById('sidebar');
+    const toggle = document.querySelector('.menu-toggle');
+    if (window.innerWidth < 900 && !sidebar.contains(e.target) && !toggle.contains(e.target)) {
+      sidebar.classList.remove('open');
+    }
+  });
+
+  // ===== LANGUAGE TOGGLE =====
+  let currentLang = 'ar';
+
+  const translations = {
+    // ---- PAGE META ----
+    'pageTitle': {
+      ar: 'ملخص أنظمة التشغيل - CS-DS203',
+      en: 'Operating Systems Summary - CS-DS203'
+    },
+    // ---- HERO ----
+    'heroBadge': {
+      ar: '🎓 Helwan International Technological University',
+      en: '🎓 Helwan International Technological University'
+    },
+    'heroTitle': {
+      ar: 'ملخص أنظمة التشغيل',
+      en: 'Operating Systems Summary'
+    },
+    'heroDesc': {
+      ar: 'ملخص شامل ومنظّم لمادة CS-DS203 — يغطي كل المحاضرات بشرح مبسّط، أنواع وفيجرز، خطوات الحل، وأمثلة محلولة بالتفصيل.',
+      en: 'A comprehensive, well-organized summary of CS-DS203 — covering all lectures with simplified explanations, types, diagrams, solution steps, and fully worked examples.'
+    },
+    'stat1': { ar: 'سلايد', en: 'Slides' },
+    'stat2': { ar: 'وظيفة رئيسية', en: 'Core Functions' },
+    'stat3': { ar: 'نوع نظام تشغيل', en: 'OS Types' },
+    'stat4': { ar: 'خوارزميات جدولة', en: 'Scheduling Algorithms' },
+    'stat5': { ar: "Banker's + Page Replacement", en: "Banker's + Page Replacement" },
+    // ---- SIDEBAR ----
+    'sidebarTitle': { ar: '🖥️ أنظمة التشغيل', en: '🖥️ Operating Systems' },
+    'sidebarSub':   { ar: 'CS-DS203 · د. عبير حسن', en: 'CS-DS203 · Dr. Abeer Hassan' },
+    'navSec1': { ar: 'المقدمة', en: 'Introduction' },
+    'navSec2': { ar: 'أنواع أنظمة التشغيل', en: 'OS Types' },
+    'navSec3': { ar: 'وظائف نظام التشغيل', en: 'OS Functions' },
+    'navSec4': { ar: 'أمثلة محلولة', en: 'Solved Examples' },
+    'nav1': { ar: 'نظرة عامة على المادة', en: 'Course Overview' },
+    'nav2': { ar: 'التطور والأنواع', en: 'Evolution & Types' },
+    'nav3': { ar: 'واجهات نظام التشغيل', en: 'OS Interfaces' },
+    'nav4': { ar: 'إدارة العمليات', en: 'Process Management' },
+    'nav5': { ar: 'خوارزميات الجدولة', en: 'Scheduling Algorithms' },
+    'nav6': { ar: 'الخيوط (Threads)', en: 'Threads' },
+    'nav7': { ar: 'الـ Deadlock', en: 'Deadlock' },
+    'nav8': { ar: 'إدارة الذاكرة', en: 'Memory Management' },
+    'nav9': { ar: 'Paging & Segmentation', en: 'Paging & Segmentation' },
+    'nav10': { ar: 'أمثلة وحلول', en: 'Examples & Solutions' },
+    // ---- SECTION TITLES ----
+    'sec-intro-title':    { ar: 'نظرة عامة على المادة', en: 'Course Overview' },
+    'sec-intro-sub':      { ar: 'ما هو نظام التشغيل؟ مكوناته ووظائفه الأساسية', en: 'What is an OS? Its components and core functions' },
+    'sec-types-title':    { ar: '📊 تطور وأنواع أنظمة التشغيل', en: '📊 OS Evolution & Types' },
+    'sec-types-sub':      { ar: 'Backend view — التطور التاريخي من الأربعينات حتى الآن', en: 'Backend view — Historical evolution from the 1940s to present' },
+    'sec-front-title':    { ar: '🖥️ واجهات نظام التشغيل', en: '🖥️ OS Interfaces' },
+    'sec-front-sub':      { ar: 'Frontend view — كيف يتفاعل المستخدم مع نظام التشغيل', en: 'Frontend view — How users interact with the OS' },
+    'sec-proc-title':     { ar: '⚙️ إدارة العمليات (Process Management)', en: '⚙️ Process Management' },
+    'sec-proc-sub':       { ar: 'دورة حياة العملية، حالاتها، الـ PCB، والـ Dispatcher', en: 'Process lifecycle, states, PCB, and the Dispatcher' },
+    'sec-sched-title':    { ar: '📅 خوارزميات الجدولة (CPU Scheduling)', en: '📅 CPU Scheduling Algorithms' },
+    'sec-sched-sub':      { ar: 'أنواع الجدولة، معايير التقييم، وأمثلة محلولة لكل خوارزمية', en: 'Scheduling types, evaluation criteria, and solved examples per algorithm' },
+    'sec-threads-title':  { ar: '🧵 الخيوط (Threads)', en: '🧵 Threads' },
+    'sec-threads-sub':    { ar: 'وحدة أساسية لاستغلال الـ CPU — خيط واحد أو عدة خيوط داخل نفس العملية', en: 'Basic CPU utilization unit — single or multiple threads within the same process' },
+    'sec-dead-title':     { ar: '🔒 الـ Deadlock', en: '🔒 Deadlock' },
+    'sec-dead-sub':       { ar: 'الشروط الأربعة + طرق الكشف والمنع والتجنب', en: 'The four conditions + Detection, Prevention, and Avoidance methods' },
+    'sec-mem-title':      { ar: '💾 إدارة الذاكرة', en: '💾 Memory Management' },
+    'sec-mem-sub':        { ar: 'Swapping، Address Binding، الـ MMU، وتقنيات التخصيص', en: 'Swapping, Address Binding, MMU, and allocation techniques' },
+    'sec-paging-title':   { ar: '📄 Paging & Segmentation', en: '📄 Paging & Segmentation' },
+    'sec-paging-sub':     { ar: 'التخصيص غير المتصل — ترجمة العناوين المنطقية للفيزيائية', en: 'Non-contiguous allocation — translating logical to physical addresses' },
+    'sec-ex-title':       { ar: '📝 أمثلة محلولة شاملة', en: '📝 Comprehensive Solved Examples' },
+    'sec-ex-sub':         { ar: 'أمثلة تطبيقية على أهم مسائل المادة مع خطوات الحل بالتفصيل', en: 'Applied examples on the most important course problems with detailed solution steps' },
+  };
+
+  // Elements to swap text on - using data-t attribute
+  // We'll inject data-t on key elements at page load
+  function applyDataT() {
+    const map = [
+      ['pageTitle', () => document.title],
+      ['heroBadge', '.hero-badge'],
+      ['heroTitle', '.hero h1'],
+      ['heroDesc', '.hero > p'],
+      ['stat1', '[data-stat="1"] .stat-label'],
+      ['stat2', '[data-stat="2"] .stat-label'],
+      ['stat3', '[data-stat="3"] .stat-label'],
+      ['stat4', '[data-stat="4"] .stat-label'],
+      ['stat5', '[data-stat="5"] .stat-label'],
+      ['sidebarTitle', '.sidebar-logo h2'],
+      ['sidebarSub', '.sidebar-logo p'],
+      ['navSec1', '[data-navsec="1"]'],
+      ['navSec2', '[data-navsec="2"]'],
+      ['navSec3', '[data-navsec="3"]'],
+      ['navSec4', '[data-navsec="4"]'],
+      ['nav1', '[data-nav="1"] .nav-text'],
+      ['nav2', '[data-nav="2"] .nav-text'],
+      ['nav3', '[data-nav="3"] .nav-text'],
+      ['nav4', '[data-nav="4"] .nav-text'],
+      ['nav5', '[data-nav="5"] .nav-text'],
+      ['nav6', '[data-nav="6"] .nav-text'],
+      ['nav7', '[data-nav="7"] .nav-text'],
+      ['nav8', '[data-nav="8"] .nav-text'],
+      ['nav9', '[data-nav="9"] .nav-text'],
+      ['nav10', '[data-nav="10"] .nav-text'],
+      ['sec-intro-title',   '[data-sec="intro"] .section-title'],
+      ['sec-intro-sub',     '[data-sec="intro"] .section-subtitle'],
+      ['sec-types-title',   '[data-sec="os-types"] .section-title'],
+      ['sec-types-sub',     '[data-sec="os-types"] .section-subtitle'],
+      ['sec-front-title',   '[data-sec="os-frontend"] .section-title'],
+      ['sec-front-sub',     '[data-sec="os-frontend"] .section-subtitle'],
+      ['sec-proc-title',    '[data-sec="process-mgmt"] .section-title'],
+      ['sec-proc-sub',      '[data-sec="process-mgmt"] .section-subtitle'],
+      ['sec-sched-title',   '[data-sec="scheduling"] .section-title'],
+      ['sec-sched-sub',     '[data-sec="scheduling"] .section-subtitle'],
+      ['sec-threads-title', '[data-sec="threads"] .section-title'],
+      ['sec-threads-sub',   '[data-sec="threads"] .section-subtitle'],
+      ['sec-dead-title',    '[data-sec="deadlock"] .section-title'],
+      ['sec-dead-sub',      '[data-sec="deadlock"] .section-subtitle'],
+      ['sec-mem-title',     '[data-sec="memory"] .section-title'],
+      ['sec-mem-sub',       '[data-sec="memory"] .section-subtitle'],
+      ['sec-paging-title',  '[data-sec="paging"] .section-title'],
+      ['sec-paging-sub',    '[data-sec="paging"] .section-subtitle'],
+      ['sec-ex-title',      '[data-sec="examples"] .section-title'],
+      ['sec-ex-sub',        '[data-sec="examples"] .section-subtitle'],
+    ];
+    return map;
+  }
+
+  function toggleLang() {
+    currentLang = currentLang === 'ar' ? 'en' : 'ar';
+    const isEn = currentLang === 'en';
+
+    // Flip HTML dir and lang
+    document.documentElement.lang = currentLang;
+    document.documentElement.dir = isEn ? 'ltr' : 'rtl';
+
+    // Update button
+    document.getElementById('langLabel').textContent = isEn ? 'عربي' : 'English';
+
+    // Flip sidebar position
+    const sidebar = document.getElementById('sidebar');
+    const main = document.querySelector('.main');
+    if (isEn) {
+      sidebar.style.right = 'auto';
+      sidebar.style.left = '0';
+      sidebar.style.borderLeft = 'none';
+      sidebar.style.borderRight = '1px solid var(--border)';
+      main.style.marginRight = '0';
+      main.style.marginLeft = '280px';
+      // Flip card hover direction
+      document.documentElement.style.setProperty('--card-hover-x', '4px');
+    } else {
+      sidebar.style.right = '0';
+      sidebar.style.left = 'auto';
+      sidebar.style.borderRight = 'none';
+      sidebar.style.borderLeft = '1px solid var(--border)';
+      main.style.marginRight = '280px';
+      main.style.marginLeft = '0';
+      document.documentElement.style.setProperty('--card-hover-x', '-4px');
+    }
+
+    // Apply all text translations
+    const map = applyDataT();
+    map.forEach(([key, selector]) => {
+      if (key === 'pageTitle') {
+        document.title = translations[key][currentLang];
+        return;
+      }
+      const el = document.querySelector(selector);
+      if (el && translations[key]) {
+        el.textContent = translations[key][currentLang];
+      }
+    });
+
+    // Animate button
+    const btn = document.getElementById('langToggleBtn');
+    btn.style.transform = 'scale(0.92)';
+    setTimeout(() => { btn.style.transform = ''; }, 180);
+  }
+
+  // Inject data attributes on DOM ready so selectors work
+  (function injectDataAttrs() {
+    // Stats
+    const stats = document.querySelectorAll('.hero-stats .stat');
+    stats.forEach((s, i) => s.setAttribute('data-stat', i + 1));
+
+    // Nav sections
+    const navSecs = document.querySelectorAll('.nav-section');
+    navSecs.forEach((s, i) => s.setAttribute('data-navsec', i + 1));
+
+    // Nav items - wrap text in span.nav-text
+    const navItems = document.querySelectorAll('.nav-item');
+    navItems.forEach((item, i) => {
+      const icon = item.querySelector('.icon');
+      const rawText = item.childNodes[item.childNodes.length - 1];
+      if (rawText && rawText.nodeType === 3) {
+        const span = document.createElement('span');
+        span.className = 'nav-text';
+        span.textContent = rawText.textContent.trim();
+        rawText.replaceWith(span);
+      }
+      item.setAttribute('data-nav', i + 1);
+    });
+
+    // Sections
+    const sectionIds = ['intro','os-types','os-frontend','process-mgmt','scheduling','threads','deadlock','memory','paging','examples'];
+    sectionIds.forEach(id => {
+      const el = document.getElementById(id);
+      if (el) el.setAttribute('data-sec', id);
+    });
+  })();
+</script>
+
+</body>
+</html>
